@@ -5,6 +5,9 @@
  */
 package agentes;
 
+import agentes.distribuidor.DistribuidorAgent;
+import agentes.mailer.Message;
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
@@ -13,6 +16,9 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.util.Logger;
+import java.io.IOException;
+import java.util.logging.Level;
+import pojo.Aviao;
 
 /**
  *
@@ -21,7 +27,7 @@ import jade.util.Logger;
 public class ControladorAgent extends Agent {
 
     private Logger myLogger = Logger.getMyLogger(getClass().getName());
-    
+
     private class ControladorBehaviour extends CyclicBehaviour {
 
         @Override
@@ -32,16 +38,38 @@ public class ControladorAgent extends Agent {
                     ACLMessage reply = msg.createReply();
                     switch (msg.getPerformative()) {
                         case ACLMessage.REQUEST:
-                            
+                            if (msg.getContent().startsWith("ADD_RADAR")) {
+                                //adiciona o aviao no radar
+                                RadarAgent.addAviao((Aviao) msg.getContentObject());
+                                //registra no log
+                                myLogger.log(Logger.WARNING, "Agent " + getLocalName() + " - ADD_RADAR ["
+                                        + ACLMessage.getPerformative(msg.getPerformative())
+                                        + "] recebida de " + msg.getSender().getLocalName());
+                                //resposta para o aviao
+                                reply.setPerformative(ACLMessage.INFORM);
+                                reply.setContent("ADDED_RADAR");
+                                myAgent.send(reply);
+                            } else if (msg.getContent().startsWith("POUSO")) {
+                                //registra no log
+                                myLogger.log(Logger.WARNING, "Agent " + getLocalName() + " - POUSO ["
+                                        + ACLMessage.getPerformative(msg.getPerformative())
+                                        + "] recebida de " + msg.getSender().getLocalName());
+                                ACLMessage acl = new ACLMessage(ACLMessage.REQUEST);
+                                acl.addReceiver(new AID("Hermes", AID.ISLOCALNAME));
+                                acl.setContent("POUSO"+msg.getContent());
+                                myAgent.send(acl);
+                            }
                             break;
                         case ACLMessage.INFORM:
-                            
+
                             break;
                         case ACLMessage.FAILURE:
-                            
+
                             break;
                         default:
-                            myLogger.log(Logger.WARNING, "Agent " + getLocalName() + " - Mensagem inesperada [" + ACLMessage.getPerformative(msg.getPerformative()) + "] recebida de " + msg.getSender().getLocalName());
+                            myLogger.log(Logger.WARNING, "Agent " + getLocalName() + " - Mensagem inesperada ["
+                                    + ACLMessage.getPerformative(msg.getPerformative()) + "] recebida de "
+                                    + msg.getSender().getLocalName());
                             reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
                             myAgent.send(reply);
                             break;
@@ -53,8 +81,7 @@ public class ControladorAgent extends Agent {
                 e.printStackTrace();
             }
         }
-        }
-        
+
     }
 
     @Override

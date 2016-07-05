@@ -5,6 +5,7 @@
  */
 package pojo;
 
+import java.io.Serializable;
 import java.util.Objects;
 import javafx.geometry.Point3D;
 
@@ -12,7 +13,7 @@ import javafx.geometry.Point3D;
  *
  * @author georg
  */
-public class Aviao {
+public class Aviao implements Serializable {
     private String nome;
     private String empresa;
     private Point3D localizacao;
@@ -20,6 +21,7 @@ public class Aviao {
     private Integer passageiros;
     private Integer tamanho;
     private String situacao;
+    private Double velocidade;
 
     @Override
     public int hashCode() {
@@ -97,5 +99,13 @@ public class Aviao {
 
     public void setSituacao(String situacao) {
         this.situacao = situacao;
+    }
+
+    public Double getVelocidade() {
+        return velocidade;
+    }
+
+    public void setVelocidade(Double velocidade) {
+        this.velocidade = velocidade;
     }
 }

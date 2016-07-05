@@ -6,12 +6,20 @@
 package agentes;
 
 import jade.core.Agent;
+import java.util.ArrayList;
+import pojo.Aviao;
 
 /**
  *
  * @author georg
  */
 public class RadarAgent extends Agent {
+
+    public static ArrayList<Aviao> radar = new ArrayList();
+
+    public static void addAviao(Aviao aviao) {
+        radar.add(aviao);
+    }
 
     @Override
     protected void takeDown() {
@@ -22,5 +30,5 @@ public class RadarAgent extends Agent {
     protected void setup() {
         super.setup(); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }
