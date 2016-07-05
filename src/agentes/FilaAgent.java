@@ -7,20 +7,38 @@ package agentes;
 
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.util.Logger;
+import java.util.ArrayList;
+import pojo.Aviao;
 
 /**
  *
  * @author georg
  */
 public class FilaAgent extends Agent {
+
     private Logger myLogger = Logger.getMyLogger(getClass().getName());
-    
+    private static ArrayList<Aviao> filaPouso = new ArrayList();
+
+    private class AtualizaBehaviour extends TickerBehaviour {
+
+        public AtualizaBehaviour(Agent a, long period) {
+            super(a, period);
+        }
+
+        @Override
+        protected void onTick() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+    }
+
     private class FilaBehaviour extends CyclicBehaviour {
 
         public FilaBehaviour(Agent a) {
@@ -81,8 +99,10 @@ public class FilaAgent extends Agent {
         dfd.addServices(sd);
         try {
             DFService.register(this, dfd);
-            FilaBehaviour PingBehaviour = new FilaBehaviour(this);
-            addBehaviour(PingBehaviour);
+            FilaBehaviour comportamento = new FilaBehaviour(this);
+            AtualizaBehaviour refresh = new AtualizaBehaviour(this, 500);
+            addBehaviour(comportamento);
+            addBehaviour(refresh);
         } catch (FIPAException e) {
             myLogger.log(Logger.SEVERE, "Agent " + getLocalName() + " - Cannot register with DF", e);
             doDelete();
