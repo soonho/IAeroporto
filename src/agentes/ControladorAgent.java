@@ -6,10 +6,12 @@
 package agentes;
 
 import jade.core.Agent;
+import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
+import jade.lang.acl.ACLMessage;
 import jade.util.Logger;
 
 /**
@@ -19,6 +21,41 @@ import jade.util.Logger;
 public class ControladorAgent extends Agent {
 
     private Logger myLogger = Logger.getMyLogger(getClass().getName());
+    
+    private class ControladorBehaviour extends CyclicBehaviour {
+
+        @Override
+        public void action() {
+            ACLMessage msg = myAgent.receive();
+            try {
+                if (msg != null) {
+                    ACLMessage reply = msg.createReply();
+                    switch (msg.getPerformative()) {
+                        case ACLMessage.REQUEST:
+                            
+                            break;
+                        case ACLMessage.INFORM:
+                            
+                            break;
+                        case ACLMessage.FAILURE:
+                            
+                            break;
+                        default:
+                            myLogger.log(Logger.WARNING, "Agent " + getLocalName() + " - Mensagem inesperada [" + ACLMessage.getPerformative(msg.getPerformative()) + "] recebida de " + msg.getSender().getLocalName());
+                            reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
+                            myAgent.send(reply);
+                            break;
+                    }
+                } else {
+                    block();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        }
+        
+    }
 
     @Override
     protected void takeDown() {
