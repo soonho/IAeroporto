@@ -17,6 +17,14 @@ public class RadarAgent extends Agent {
 
     public static ArrayList<Aviao> radar = new ArrayList();
 
+    public static void setStatus(String aviao, String status) {
+        for (Aviao av : radar) {
+            if (av.getNome().equals(aviao)) {
+                av.setSituacao(status);
+            }
+        }
+    }
+
     public static void addAviao(Aviao aviao) {
         radar.add(aviao);
     }
