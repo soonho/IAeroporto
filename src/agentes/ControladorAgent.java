@@ -27,6 +27,10 @@ public class ControladorAgent extends Agent {
 
     private class ControladorBehaviour extends CyclicBehaviour {
 
+        public ControladorBehaviour(Agent a) {
+            super(a);
+        }
+
         @Override
         public void action() {
             ACLMessage msg = myAgent.receive();
@@ -129,7 +133,6 @@ public class ControladorAgent extends Agent {
 
     @Override
     protected void setup() {
-
         // Registration with the DF 
         DFAgentDescription dfd = new DFAgentDescription();
         ServiceDescription sd = new ServiceDescription();
@@ -140,7 +143,7 @@ public class ControladorAgent extends Agent {
         dfd.addServices(sd);
         try {
             DFService.register(this, dfd);
-            ControladorAgent.ControladorBehaviour comportamento = new ControladorAgent.ControladorBehaviour();
+            ControladorBehaviour comportamento = new ControladorBehaviour(this);
             addBehaviour(comportamento);
         } catch (FIPAException e) {
             myLogger.log(Logger.SEVERE, "Agent " + getLocalName() + " - Cannot register with DF", e);
