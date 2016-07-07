@@ -100,9 +100,9 @@ public class ControladorAgent extends Agent {
                                     + ACLMessage.getPerformative(msg.getPerformative()) + "] recebida de "
                                     + msg.getSender().getLocalName());
                             //enviar mensagem para os bombeiros
-                            ACLMessage acl = new ACLMessage(ACLMessage.REQUEST);
+                            ACLMessage acl = new ACLMessage(ACLMessage.FAILURE);
                             acl.addReceiver(new AID("Fireman", AID.ISLOCALNAME));
-                            acl.setContent("POUSO" + msg.getContent());
+                            acl.setContent("NO_POUSO:" + msg.getContent());
                             myAgent.send(acl);
                             break;
                         default:

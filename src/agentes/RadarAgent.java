@@ -6,6 +6,12 @@
 package agentes;
 
 import jade.core.Agent;
+import jade.core.behaviours.TickerBehaviour;
+import jade.domain.DFService;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.domain.FIPAException;
+import jade.util.Logger;
 import java.util.ArrayList;
 import pojo.Aviao;
 
@@ -15,12 +21,29 @@ import pojo.Aviao;
  */
 public class RadarAgent extends Agent {
 
+    private Logger myLogger = Logger.getMyLogger(getClass().getName());
+
     public static ArrayList<Aviao> radar = new ArrayList();
+
+    private class RadarBehaviour extends TickerBehaviour {
+
+        public RadarBehaviour(Agent a) {
+            super(a, 1000);
+        }
+
+        @Override
+        protected void onTick() {
+            for (Aviao av : radar) {
+                System.out.println(av.getNome());
+            }
+        }
+    }
 
     public static void setStatus(String aviao, String status) {
         for (Aviao av : radar) {
             if (av.getNome().equals(aviao)) {
                 av.setSituacao(status);
+                break;
             }
         }
     }
@@ -31,12 +54,30 @@ public class RadarAgent extends Agent {
 
     @Override
     protected void takeDown() {
-        super.takeDown(); //To change body of generated methods, choose Tools | Templates.
+        try {
+            DFService.deregister(this);
+        } catch (Exception e) {
+        }
     }
 
     @Override
     protected void setup() {
-        super.setup(); //To change body of generated methods, choose Tools | Templates.
+        // Registration with the DF 
+        DFAgentDescription dfd = new DFAgentDescription();
+        ServiceDescription sd = new ServiceDescription();
+        sd.setType("RadarAgent");
+        sd.setName(getName());
+        sd.setOwnership("soonho");
+        dfd.setName(getAID());
+        dfd.addServices(sd);
+        try {
+            DFService.register(this, dfd);
+            RadarBehaviour comportamento = new RadarBehaviour(this);
+            addBehaviour(comportamento);
+        } catch (FIPAException e) {
+            myLogger.log(Logger.SEVERE, "Agent " + getLocalName() + " - Cannot register with DF", e);
+            doDelete();
+        }
     }
 
 }
