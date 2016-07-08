@@ -15,7 +15,8 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.util.Logger;
-import pojo.Aviao;
+import java.util.ArrayList;
+import pojo.Finger;
 
 /**
  *
@@ -24,6 +25,7 @@ import pojo.Aviao;
 public class GoldFingerAgent extends Agent {
 
     private Logger myLogger = Logger.getMyLogger(getClass().getName());
+    private static ArrayList<Finger> listaFingers = new ArrayList();
 
     private class AtualizaBehaviour extends TickerBehaviour {
 
