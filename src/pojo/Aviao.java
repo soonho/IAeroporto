@@ -23,6 +23,15 @@ public class Aviao implements Serializable {
     private String situacao;
     private Double velocidade;
 
+    public Aviao(String nome, Point3D localizacao, Point3D destino, Integer tamanho, String situacao, Double velocidade) {
+        this.nome = nome;
+        this.localizacao = localizacao;
+        this.destino = destino;
+        this.tamanho = tamanho;
+        this.situacao = situacao;
+        this.velocidade = velocidade;
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;

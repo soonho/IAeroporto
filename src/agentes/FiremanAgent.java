@@ -32,7 +32,6 @@ public class FiremanAgent extends Agent {
 
         @Override
         public void action() {
-
             ACLMessage msg = myAgent.receive();
             try {
                 if (msg != null) {
