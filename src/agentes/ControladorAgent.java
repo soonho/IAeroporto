@@ -15,6 +15,7 @@ import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.util.Logger;
 import java.util.StringTokenizer;
+import javafx.geometry.Point3D;
 import pojo.Aviao;
 
 /**
@@ -41,7 +42,20 @@ public class ControladorAgent extends Agent {
                         case ACLMessage.REQUEST:
                             if (msg.getContent().startsWith("ADD_RADAR")) {
                                 //adiciona o aviao no radar
-                                RadarAgent.addAviao((Aviao) msg.getContentObject());
+                                StringTokenizer stok = new StringTokenizer(msg.getContent(), ":", false);
+                                String order = stok.nextToken();
+                                Aviao aviao = new Aviao( 
+                                        stok.nextToken(), 
+                                        new Point3D(Double.parseDouble(stok.nextToken()),
+                                                Double.parseDouble(stok.nextToken()),
+                                                Double.parseDouble(stok.nextToken())),
+                                        new Point3D(Double.parseDouble(stok.nextToken()),
+                                                Double.parseDouble(stok.nextToken()),
+                                                Double.parseDouble(stok.nextToken())),
+                                        Integer.parseInt(stok.nextToken()),
+                                        stok.nextToken(),
+                                        Double.parseDouble(stok.nextToken()));
+                                RadarAgent.addAviao(aviao);
                                 //registra no log
                                 myLogger.log(Logger.INFO, "Agent " + getLocalName() + " - ADD_RADAR ["
                                         + ACLMessage.getPerformative(msg.getPerformative())

@@ -42,7 +42,13 @@ public class AviaoAgent extends Agent {
 
         @Override
         protected void onTick() {
-            
+            double andou = aviao.getVelocidade() / 3.6;
+            double m = (aviao.getyLocalizacao() - aviao.getyDestino())
+                    / (aviao.getxLocalizacao() - aviao.getyDestino());
+            double alfa = Math.atan(m);
+            aviao.setxLocalizacao((Math.cos(alfa) * andou) + aviao.getxLocalizacao());
+            aviao.setyLocalizacao((Math.sin(alfa) * andou) + aviao.getyLocalizacao());
+            System.out.println(aviao.getxLocalizacao() + "-" + aviao.getyLocalizacao());
         }
 
     }
@@ -58,12 +64,7 @@ public class AviaoAgent extends Agent {
             if (!isRegistered) {
                 ACLMessage acl = new ACLMessage(ACLMessage.REQUEST);
                 acl.addReceiver(new AID("Joystick", AID.ISLOCALNAME));
-                acl.setContent("ADD_RADAR:"+getName()+":"+aviao.stringfy());
-                try {
-                    acl.setContentObject(aviao);
-                } catch (IOException ex) {
-                    java.util.logging.Logger.getLogger(AviaoAgent.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                acl.setContent("ADD_RADAR:" + getName() + ":" + aviao.stringfy());
                 myAgent.send(acl);
             }
 
@@ -72,6 +73,11 @@ public class AviaoAgent extends Agent {
                 if (msg != null) {
                     ACLMessage reply = msg.createReply();
                     switch (msg.getPerformative()) {
+                        case ACLMessage.INFORM:
+                            if (msg.getContent().startsWith("ADDED_RADAR")) {
+                                isRegistered = true;
+                            }
+                            break;
                         case ACLMessage.FAILURE:
                             if (msg.getContent().startsWith("EM_TERRA")
                                     || msg.getContent().startsWith("NO_POUSO")) {

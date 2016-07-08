@@ -176,14 +176,14 @@ public class Aviao implements Serializable {
     }
 
     public String stringfy() {
-        return this.situacao + ":"
-                + this.xLocalizacao + ":"
+        return this.xLocalizacao + ":"
                 + this.yLocalizacao + ":"
                 + this.zLocalizacao + ":"
                 + this.xDestino + ":"
                 + this.yDestino + ":"
                 + this.zDestino + ":"
-                + this.velocidade + ":"
-                + this.tamanho;
+                + this.tamanho + ":"
+                + this.situacao + ":"
+                + this.velocidade;
     }
 }
