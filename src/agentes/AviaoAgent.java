@@ -20,7 +20,6 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import javafx.geometry.Point3D;
 import pojo.Aviao;
-
 /**
  *
  * @author georg
