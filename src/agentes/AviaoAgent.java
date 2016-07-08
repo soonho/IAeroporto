@@ -42,7 +42,7 @@ public class AviaoAgent extends Agent {
 
         @Override
         protected void onTick() {
-//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            
         }
 
     }
@@ -56,9 +56,9 @@ public class AviaoAgent extends Agent {
         @Override
         public void action() {
             if (!isRegistered) {
-                ACLMessage acl = new ACLMessage(ACLMessage.INFORM);
+                ACLMessage acl = new ACLMessage(ACLMessage.REQUEST);
                 acl.addReceiver(new AID("Joystick", AID.ISLOCALNAME));
-                acl.setContent("ADD_RADAR");
+                acl.setContent("ADD_RADAR:"+getName()+":"+aviao.stringfy());
                 try {
                     acl.setContentObject(aviao);
                 } catch (IOException ex) {
