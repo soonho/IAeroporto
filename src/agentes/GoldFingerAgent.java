@@ -16,6 +16,7 @@ import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.util.Logger;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 import pojo.Finger;
 
 /**
@@ -114,6 +115,9 @@ public class GoldFingerAgent extends Agent {
                             break;
                         case ACLMessage.INFORM: {
                             if (msg.getContent().startsWith("POUSO")) {
+                                StringTokenizer stok = new StringTokenizer(msg.getContent(), ":", false);
+                                String info = stok.nextToken();
+                                String aviao = stok.nextToken();
                                 //registra no log
                                 myLogger.log(Logger.WARNING, "Agent " + getLocalName() + " - POUSO COM SUCESSO! ["
                                         + ACLMessage.getPerformative(msg.getPerformative())
@@ -122,9 +126,13 @@ public class GoldFingerAgent extends Agent {
                                 myLogger.log(Logger.INFO, "Total de fingers: " + listaFingers.size());
                                 myLogger.log(Logger.INFO, "Finger Disponivel: " + this.getFreeFinger().getFingerNumber());
 
-                                reply.setPerformative(ACLMessage.INFORM);
-                                reply.setContent("Vá para o Finger: " + this.getFreeFinger().getFingerNumber());
-                                myAgent.send(reply);
+                                ACLMessage acl = new ACLMessage(ACLMessage.REQUEST);
+                                acl.addReceiver(new AID(aviao, AID.ISLOCALNAME));
+                                acl.setContent("GO_TO_FINGER:" + this.getFreeFinger().getFingerNumber());
+                                myAgent.send(acl);
+//                                reply.setPerformative(ACLMessage.INFORM);
+//                                reply.setContent("Vá para o Finger: " + this.getFreeFinger().getFingerNumber());
+//                                myAgent.send(reply);
                             }
                             System.out.println("é meu parceiro...");
                         }

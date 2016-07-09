@@ -20,6 +20,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import javafx.geometry.Point3D;
 import pojo.Aviao;
+
 /**
  *
  * @author georg
@@ -83,6 +84,15 @@ public class AviaoAgent extends Agent {
                 if (msg != null) {
                     ACLMessage reply = msg.createReply();
                     switch (msg.getPerformative()) {
+                        case ACLMessage.REQUEST:
+                            if (msg.getContent().startsWith("GO_TO_FINGER")) {
+                                StringTokenizer stok = new StringTokenizer(msg.getContent(), ":", false);
+                                String info = stok.nextToken();
+                                String finger = stok.nextToken();
+                                aviao.setSituacao("FINGER:" + finger);
+                                myLogger.log(Logger.INFO, "Indo para o Finger: " + finger);
+                            }
+                            break;
                         case ACLMessage.INFORM:
                             if (msg.getContent().startsWith("ADDED_RADAR")) {
                                 isRegistered = true;
@@ -145,7 +155,8 @@ public class AviaoAgent extends Agent {
     protected void setup() {
         //Gerar novo aviao
         aviao = new Aviao(
-                getRandomName(),
+                //                getRandomName(),
+                getLocalName(),
                 getRandomPoint(),
                 new Point3D(0, 0, 0),
                 (int) (Math.random() * 800) + 3000,
@@ -155,7 +166,7 @@ public class AviaoAgent extends Agent {
         DFAgentDescription dfd = new DFAgentDescription();
         ServiceDescription sd = new ServiceDescription();
         sd.setType("AviaoAgent");
-        sd.setName(aviao.getNome());
+        sd.setName(getName());
         sd.setOwnership("soonho");
         dfd.setName(getAID());
         dfd.addServices(sd);

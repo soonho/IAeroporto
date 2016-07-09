@@ -99,7 +99,7 @@ public class ControladorAgent extends Agent {
                                 if (status.equals("POUSEI")) {
                                     ACLMessage acl = new ACLMessage(ACLMessage.REQUEST);
                                     acl.addReceiver(new AID("GoldFinger", AID.ISLOCALNAME));
-                                    acl.setContent("POUSO" + msg.getContent());
+                                    acl.setContent("POUSO:" + aviao);
                                     myAgent.send(acl);
                                 }
                             } else if (msg.getContent().startsWith("PERMIT_POUSO")) {
