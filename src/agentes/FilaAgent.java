@@ -6,10 +6,10 @@ public class FilaAgent extends Agent {
 
     @Override
     protected void setup() {
-        System.out.println("Testando");
-
         FilaBehaviour behaviour = new FilaBehaviour(this);
         addBehaviour(behaviour);
+        FilaBehaviourRefresh behaviourRefresh = new FilaBehaviourRefresh(this, 5000);
+        addBehaviour(behaviourRefresh);
     }
 
 }
