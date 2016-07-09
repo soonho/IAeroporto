@@ -14,7 +14,7 @@ import javafx.geometry.Point3D;
  * @author georg
  */
 public class Aviao implements Serializable {
-
+        
     private String nome;
     private String empresa;
     private Double xLocalizacao;
