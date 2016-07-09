@@ -42,6 +42,39 @@ public class GoldFingerAgent extends Agent {
 
     private class GoldeFingerBehaviour extends CyclicBehaviour {
 
+        public Finger getFreeFinger() {
+            for (Finger temp : listaFingers) {
+                if (temp.getFingerStatus() == false) {
+                    return temp;
+                } else {
+                    return null;
+                }
+
+            }
+
+            return null;
+        }
+
+        public int getTotalFreeFingers() {
+            int total = 0;
+            for (Finger temp : listaFingers) {
+                if (temp.getFingerStatus() == false) {
+                    total++;
+                }
+            }
+            return total;
+        }
+
+        public int getTotalBusyFingers() {
+            int total = 0;
+            for (Finger temp : listaFingers) {
+                if (temp.getFingerStatus() == true) {
+                    total++;
+                }
+            }
+            return total;
+        }
+
         public GoldeFingerBehaviour(Agent a) {
             super(a);
         }
@@ -55,9 +88,10 @@ public class GoldFingerAgent extends Agent {
                     switch (msg.getPerformative()) {
                         case ACLMessage.REQUEST:
                             /* TO DO */
+ /*
                             if (msg.getContent().startsWith("ADD_RADAR")) {
                                 //adiciona o aviao no radar
-                                RadarAgent.addAviao((Aviao) msg.getContentObject());
+                                RadarAgent.addAviao((Finger) msg.getContentObject());
                                 //registra no log
                                 myLogger.log(Logger.WARNING, "Agent " + getLocalName() + " - ADD_RADAR ["
                                         + ACLMessage.getPerformative(msg.getPerformative())
@@ -76,6 +110,7 @@ public class GoldFingerAgent extends Agent {
                                 acl.setContent("POUSO" + msg.getContent());
                                 myAgent.send(acl);
                             }
+                             */
                             break;
                         case ACLMessage.INFORM: {
                             if (msg.getContent().startsWith("POUSO")) {
@@ -83,10 +118,13 @@ public class GoldFingerAgent extends Agent {
                                 myLogger.log(Logger.WARNING, "Agent " + getLocalName() + " - POUSO COM SUCESSO! ["
                                         + ACLMessage.getPerformative(msg.getPerformative())
                                         + "] recebida de " + msg.getSender().getLocalName());
-                                ACLMessage acl = new ACLMessage(ACLMessage.REQUEST);
-                                acl.addReceiver(new AID("Aviao", AID.ISLOCALNAME));
-                                acl.setContent("POUSO" + msg.getContent());
-                                myAgent.send(acl);
+
+                                myLogger.log(Logger.INFO, "Total de fingers: " + listaFingers.size());
+                                myLogger.log(Logger.INFO, "Finger Disponivel: " + this.getFreeFinger().getFingerNumber());
+
+                                reply.setPerformative(ACLMessage.INFORM);
+                                reply.setContent("Vá para o Finger: " + this.getFreeFinger().getFingerNumber());
+                                myAgent.send(reply);
                             }
                             System.out.println("é meu parceiro...");
                         }
@@ -121,6 +159,14 @@ public class GoldFingerAgent extends Agent {
     protected void setup() {
         super.setup(); //To change body of generated methods, choose Tools | Templates.
         System.out.println("Hello");
+
+        Finger finger01 = new Finger(1);
+        Finger finger02 = new Finger(2);
+        Finger finger03 = new Finger(3);
+
+        listaFingers.add(finger01);
+        listaFingers.add(finger02);
+        listaFingers.add(finger03);
 
         // Registration with the DF
         DFAgentDescription dfd = new DFAgentDescription();

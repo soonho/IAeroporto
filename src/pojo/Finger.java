@@ -12,27 +12,34 @@ import java.io.Serializable;
  * @author mhayk
  */
 public class Finger implements Serializable {
-    private Integer number;
-    private Boolean status = false;
-    
-    public void setFingerNumber(Integer number) 
-    {
+
+    private int number;
+    private boolean status = false;
+
+    public Finger(int number) {
         this.number = number;
+        this.status = false;
     }
-    
-    public Integer getFingerNumber()
-    {
-        return this.number;
-    }
-    
-    public void setFingerStatus(Boolean status)
-    {
+
+    public void Finger(int number, boolean status) {
+        this.number = number;
         this.status = status;
     }
-    
-    public Boolean getFingerStatus()
-    {
+
+    public void setFingerNumber(int number) {
+        this.number = number;
+    }
+
+    public int getFingerNumber() {
+        return this.number;
+    }
+
+    public void setFingerStatus(Boolean status) {
+        this.status = status;
+    }
+
+    public boolean getFingerStatus() {
         return this.status;
     }
-    
+
 }
