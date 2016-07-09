@@ -87,7 +87,7 @@ public class RadarAgent extends Agent {
         dfd.addServices(sd);
         try {
             DFService.register(this, dfd);
-            RadarBehaviour comportamento = new RadarBehaviour(this, 10000);
+            RadarBehaviour comportamento = new RadarBehaviour(this, 1000);
             addBehaviour(comportamento);
         } catch (FIPAException e) {
             myLogger.log(Logger.SEVERE, "Agent " + getLocalName() + " - Cannot register with DF", e);

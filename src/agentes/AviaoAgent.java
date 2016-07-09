@@ -47,9 +47,9 @@ public class AviaoAgent extends Agent {
                     / (aviao.getxLocalizacao() - aviao.getyDestino());
             double alfa = Math.atan(m);
             aviao.setxLocalizacao(aviao.getxLocalizacao()
-                    + (aviao.getxLocalizacao() > 0 ? -1 : 1) * Math.abs(Math.sin(alfa) * andou));
-            aviao.setyLocalizacao(aviao.getyLocalizacao()
                     + (aviao.getxLocalizacao() > 0 ? -1 : 1) * Math.abs(Math.cos(alfa) * andou));
+            aviao.setyLocalizacao(aviao.getyLocalizacao()
+                    + (aviao.getyLocalizacao() > 0 ? -1 : 1) * Math.abs(Math.sin(alfa) * andou));
             System.out.println(aviao.getxLocalizacao() + "," + aviao.getyLocalizacao());
             for (Aviao av : RadarAgent.radar) {
                 if (av.getNome().equals(aviao.getNome())) {
@@ -99,32 +99,20 @@ public class AviaoAgent extends Agent {
                             }
                             break;
                         case ACLMessage.FAILURE:
-                            if (msg.getContent().startsWith("EM_TERRA")
-                                    || msg.getContent().startsWith("NO_POUSO")) {
-                                //recebe o request e diz que está indo abastecer
-                                StringTokenizer stok = new StringTokenizer(msg.getContent(), ":", false);
-                                String status = stok.nextToken();
-                                String aviao = stok.nextToken();
-                                //registra no log
-                                myLogger.log(Logger.INFO, "Agent " + getLocalName()
-                                        + " - SOS:" + status + " de " + aviao + " ["
-                                        + ACLMessage.getPerformative(msg.getPerformative())
-                                        + "] recebida de " + msg.getSender().getLocalName()
-                                );
-                                //resposta para o goldfinger
-                                reply.setPerformative(ACLMessage.INFORM);
-                                reply.setContent("RESGATANDO:" + aviao);
-                                myAgent.send(reply);
-                                //mensagem para o aviao
-                                ACLMessage acl = new ACLMessage(ACLMessage.INFORM);
-                                acl.addReceiver(new AID(aviao, AID.ISLOCALNAME));
-                                acl.setContent("TE_RESGATANDO");
-                                myAgent.send(acl);
+                            //mensagem para o Controlador e para o Fireman
+                            ACLMessage acl = new ACLMessage(ACLMessage.INFORM);
+                            acl.addReceiver(new AID("Joystick", AID.ISLOCALNAME));
+                            acl.addReceiver(new AID("Fireman", AID.ISLOCALNAME));
+                            if (aviao.getSituacao().equals("VOANDO")
+                                    || aviao.getSituacao().equals("POUSANDO")) {
+                                acl.setContent("NO_POUSO");
                             } else {
-                                myLogger.log(Logger.WARNING, "Agent " + getLocalName() + " - Mensagem inesperada ["
-                                        + ACLMessage.getPerformative(msg.getPerformative()) + "] recebida de "
-                                        + msg.getSender().getLocalName());
+                                acl.setContent("EM_TERRA");
                             }
+                            myAgent.send(acl);
+                            myLogger.log(Logger.WARNING, "Agent " + getLocalName() + " - FALHA ["
+                                    + ACLMessage.getPerformative(msg.getPerformative()) + "] recebida de "
+                                    + msg.getSender().getLocalName());
                             break;
                         default:
                             myLogger.log(Logger.WARNING, "Agent " + getLocalName() + " - Mensagem inesperada ["
@@ -183,7 +171,7 @@ public class AviaoAgent extends Agent {
     }
 
     private static Point3D getRandomPoint() {
-        return new Point3D(Math.random() * 10000, Math.random() * 10000, 30000);
+        return new Point3D((Math.random() < 0.5 ? -1 : 1) * Math.random() * 10000, (Math.random() < 0.5 ? -1 : 1) * Math.random() * 10000, 30000);
     }
 
     private static String getRandomItem(String[] array) {
