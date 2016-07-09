@@ -6,6 +6,7 @@
 package view;
 
 import agentes.RadarAgent;
+import java.awt.Color;
 import java.awt.Graphics;
 import javax.swing.JPanel;
 import pojo.Aviao;
@@ -24,6 +25,7 @@ public class RadarView extends javax.swing.JFrame {
 
             g.drawLine(0, 250, 500, 250);
             g.drawLine(250, 0, 250, 500);
+            g.setColor(Color.GREEN);
             synchronized (RadarAgent.radar) {
                 for (Aviao av : RadarAgent.radar) {
                     int converterX = (av.getxLocalizacao().intValue() / 40) + 250;
@@ -56,13 +58,12 @@ public class RadarView extends javax.swing.JFrame {
         jPanel1 = new JPanelRadar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMaximumSize(new java.awt.Dimension(500, 500));
         setMinimumSize(new java.awt.Dimension(500, 500));
         setUndecorated(true);
-        setPreferredSize(new java.awt.Dimension(500, 500));
         setResizable(false);
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setBackground(new java.awt.Color(0, 0, 0));
+        jPanel1.setForeground(new java.awt.Color(0, 204, 0));
         jPanel1.setMaximumSize(new java.awt.Dimension(500, 500));
         jPanel1.setMinimumSize(new java.awt.Dimension(500, 500));
         jPanel1.setPreferredSize(new java.awt.Dimension(500, 500));
