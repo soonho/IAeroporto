@@ -14,6 +14,7 @@ import jade.domain.FIPAException;
 import jade.util.Logger;
 import java.util.ArrayList;
 import pojo.Aviao;
+import view.RadarView;
 
 /**
  *
@@ -22,6 +23,7 @@ import pojo.Aviao;
 public class RadarAgent extends Agent {
 
     private Logger myLogger = Logger.getMyLogger(getClass().getName());
+    private RadarView radarView;
 
     public static ArrayList<Aviao> radar = new ArrayList();
 
@@ -33,23 +35,35 @@ public class RadarAgent extends Agent {
 
         @Override
         protected void onTick() {
-            for (Aviao av : radar) {
-                System.out.println(av.getNome());
+            radarView.repaint();
+            synchronized (radar) {
+                for (Aviao av : radar) {
+                    System.out.println(av.getNome());
+                }
             }
         }
     }
 
     public static void setStatus(String aviao, String status) {
-        for (Aviao av : radar) {
-            if (av.getNome().equals(aviao)) {
-                av.setSituacao(status);
-                break;
+        synchronized (radar) {
+            for (Aviao av : radar) {
+                if (av.getNome().equals(aviao)) {
+                    av.setSituacao(status);
+                    break;
+                }
             }
         }
     }
 
     public static void addAviao(Aviao aviao) {
-        radar.add(aviao);
+        synchronized (radar) {
+            for (Aviao av : radar) {
+                if (av.getNome().equals(aviao)) {
+                    return;
+                }
+            }
+            radar.add(aviao);
+        }
     }
 
     @Override
@@ -62,6 +76,7 @@ public class RadarAgent extends Agent {
 
     @Override
     protected void setup() {
+        radarView = new RadarView();
         // Registration with the DF 
         DFAgentDescription dfd = new DFAgentDescription();
         ServiceDescription sd = new ServiceDescription();

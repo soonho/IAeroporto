@@ -44,8 +44,8 @@ public class ControladorAgent extends Agent {
                                 //adiciona o aviao no radar
                                 StringTokenizer stok = new StringTokenizer(msg.getContent(), ":", false);
                                 String order = stok.nextToken();
-                                Aviao aviao = new Aviao( 
-                                        stok.nextToken(), 
+                                Aviao aviao = new Aviao(
+                                        stok.nextToken(),
                                         new Point3D(Double.parseDouble(stok.nextToken()),
                                                 Double.parseDouble(stok.nextToken()),
                                                 Double.parseDouble(stok.nextToken())),
@@ -102,6 +102,14 @@ public class ControladorAgent extends Agent {
                                     acl.setContent("POUSO" + msg.getContent());
                                     myAgent.send(acl);
                                 }
+                            } else if (msg.getContent().startsWith("PERMIT_POUSO")) {
+                                StringTokenizer stok = new StringTokenizer(msg.getContent(), ":", false);
+                                String status = stok.nextToken();
+                                String aviao = stok.nextToken();
+                                ACLMessage acl = new ACLMessage(ACLMessage.REQUEST);
+                                acl.addReceiver(new AID(aviao, AID.ISLOCALNAME));
+                                acl.setContent("PERMIT_POUSO");
+                                myAgent.send(acl);
                             } else {
                                 myLogger.log(Logger.WARNING, "Agent " + getLocalName() + " - Mensagem inesperada ["
                                         + ACLMessage.getPerformative(msg.getPerformative()) + "] recebida de "

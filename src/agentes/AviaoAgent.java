@@ -45,9 +45,18 @@ public class AviaoAgent extends Agent {
             double m = (aviao.getyLocalizacao() - aviao.getyDestino())
                     / (aviao.getxLocalizacao() - aviao.getyDestino());
             double alfa = Math.atan(m);
-            aviao.setxLocalizacao((Math.cos(alfa) * andou) + aviao.getxLocalizacao());
-            aviao.setyLocalizacao((Math.sin(alfa) * andou) + aviao.getyLocalizacao());
-            System.out.println(aviao.getxLocalizacao() + "-" + aviao.getyLocalizacao());
+            aviao.setxLocalizacao(aviao.getxLocalizacao()
+                    + (aviao.getxLocalizacao() > 0 ? -1 : 1) * Math.abs(Math.sin(alfa) * andou));
+            aviao.setyLocalizacao(aviao.getyLocalizacao()
+                    + (aviao.getxLocalizacao() > 0 ? -1 : 1) * Math.abs(Math.cos(alfa) * andou));
+            System.out.println(aviao.getxLocalizacao() + "," + aviao.getyLocalizacao());
+            for (Aviao av : RadarAgent.radar) {
+                if (av.getNome().equals(aviao.getNome())) {
+                    av.setxLocalizacao(aviao.getxLocalizacao());
+                    av.setyLocalizacao(aviao.getyLocalizacao());
+                    break;
+                }
+            }
         }
 
     }
@@ -60,14 +69,16 @@ public class AviaoAgent extends Agent {
 
         @Override
         public void action() {
+            ACLMessage msg = null;
             if (!isRegistered) {
                 ACLMessage acl = new ACLMessage(ACLMessage.REQUEST);
                 acl.addReceiver(new AID("Joystick", AID.ISLOCALNAME));
-                acl.setContent("ADD_RADAR:" + getName() + ":" + aviao.stringfy());
+                acl.setContent("ADD_RADAR:" + aviao.getNome() + ":" + aviao.stringfy());
                 myAgent.send(acl);
+                msg = myAgent.blockingReceive();
+            } else {
+                msg = myAgent.receive();
             }
-
-            ACLMessage msg = myAgent.receive();
             try {
                 if (msg != null) {
                     ACLMessage reply = msg.createReply();
@@ -144,7 +155,7 @@ public class AviaoAgent extends Agent {
         DFAgentDescription dfd = new DFAgentDescription();
         ServiceDescription sd = new ServiceDescription();
         sd.setType("AviaoAgent");
-        sd.setName(getName());
+        sd.setName(aviao.getNome());
         sd.setOwnership("soonho");
         dfd.setName(getAID());
         dfd.addServices(sd);
