@@ -7,6 +7,8 @@ import jade.lang.acl.ACLMessage;
 
 public class FilaBehaviourRefresh extends TickerBehaviour {
 
+    ACLMessage acl = new ACLMessage(ACLMessage.REQUEST);
+
     public FilaBehaviourRefresh(Agent a, long period) {
         super(a, period);
     }
@@ -14,9 +16,8 @@ public class FilaBehaviourRefresh extends TickerBehaviour {
     @Override
     protected void onTick() {
         System.out.println("Solicitando informações do RADAR");
-        ACLMessage acl = new ACLMessage(ACLMessage.REQUEST);
         acl.addReceiver(new AID("Radar", AID.ISLOCALNAME));
-        acl.setContent("FILA: Solicitando informações do Radar");
+        acl.setContent("RADAR: Solicitando informações do Radar");
         myAgent.send(acl);
     }
 
