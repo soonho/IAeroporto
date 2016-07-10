@@ -4,6 +4,7 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
+import javafx.geometry.Point3D;
 import pojo.Aviao;
 
 /**
@@ -13,14 +14,16 @@ import pojo.Aviao;
 public class NoCrashTicker extends TickerBehaviour {
 
     ACLMessage alert = new ACLMessage(ACLMessage.INFORM);
-    Double aLocalX, aLocalY, aLocalZ;
-    Double aDestX, aDestY;
 
-    Double bLocalX, bLocalY, bLocalZ;
-    Double bDestX, bDestY;
+    Point3D pointA;
+    Point3D pointB;
+
+    Point3D destA;
+    Point3D destB;
 
     Double coefA, coefB;
     Double distancia;
+    String msgText;
 
     NoCrashTicker(Agent agent, long delay) {
         super(agent, delay);
@@ -41,18 +44,19 @@ public class NoCrashTicker extends TickerBehaviour {
 
     protected boolean crossRouteTest(Aviao aviaoA, Aviao aviaoB) {
         setLocal(aviaoA, aviaoB);
-        coefA = (aLocalY - aDestY) / (aLocalX - aDestX);
-        coefB = (bLocalY - bDestY) / (bLocalX - bDestX);
+        coefA = (pointA.getY() - destA.getY()) / (pointA.getX() - destA.getX());
+        coefB = (pointB.getY() - destB.getY()) / (pointB.getX() - destB.getX());
 
-        distancia = Math.sqrt(Math.pow((aLocalX - bLocalX), 2) + Math.pow((aLocalY - bLocalY), 2));
-        if (distancia <= 1000) {
-            return !coefA.equals(coefB) && !aDestX.equals(bDestX) && !aDestY.equals(bDestY);
+        distancia = pointA.distance(pointB.getX(), pointB.getY(), pointB.getZ());
+
+        if (!coefA.equals(coefB)) {
+            return distancia <= 4000;
         }
         return false;
     }
 
     protected void collisionAlert(Aviao aviaoA, Aviao aviaoB) {
-        String msgText = "Alerta: " + aviaoA.getNome() + " e " + aviaoB.getNome() + " estão em rota de colisão!!!";
+        msgText = "RISCO de Colisão: " + aviaoA.getNome() + " e " + aviaoB.getNome();
         alert.setContent(msgText);
         alert.addUserDefinedParameter("AviaoA", aviaoA.getNome());
         alert.addUserDefinedParameter("AviaoB", aviaoB.getNome());
@@ -63,14 +67,10 @@ public class NoCrashTicker extends TickerBehaviour {
     }
 
     protected void setLocal(Aviao aviaoA, Aviao aviaoB) {
-        this.aLocalX = aviaoA.getxLocalizacao();
-        this.aLocalY = aviaoA.getyLocalizacao();
-        this.aDestX = aviaoA.getxDestino();
-        this.aDestY = aviaoA.getyDestino();
+        this.pointA = aviaoA.getLocalizacao();
+        this.destA = aviaoA.getDestino();
 
-        this.bLocalX = aviaoB.getxLocalizacao();
-        this.bLocalY = aviaoB.getxLocalizacao();
-        this.bDestX = aviaoB.getxDestino();
-        this.bDestY = aviaoB.getyDestino();
+        this.pointB = aviaoB.getLocalizacao();
+        this.destB = aviaoB.getLocalizacao();
     }
 }
