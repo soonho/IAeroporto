@@ -14,28 +14,35 @@ public class FilaBehaviour extends CyclicBehaviour {
     }
 
     public static String printDistancia() {
-        double x, y, z, sqrt, menor = Global.Infinity;
+        double x, y, z, sqrt, menor = Double.MAX_VALUE;
         String nome = null;
-        for (Aviao av : RadarAgent.radar) {
-            System.out.println("Distancia: " + av.getLocalizacao());
-            x = Math.pow(av.getxLocalizacao(), 2);
-            y = Math.pow(av.getyLocalizacao(), 2);
-            z = Math.pow(av.getzLocalizacao(), 2);
-            sqrt = Math.sqrt(x + y + z);
-            if (menor > sqrt) {
-                menor = sqrt;
-                nome = av.getNome();
+        synchronized (RadarAgent.radar) {
+            for (Aviao av : RadarAgent.radar) {
+                System.out.println("Distancia: " + av.getLocalizacao());
+                x = Math.pow(av.getxLocalizacao() - av.getxDestino(), 2);
+                y = Math.pow(av.getyLocalizacao() - av.getyDestino(), 2);
+                z = Math.pow(av.getzLocalizacao() - av.getzDestino(), 2);
+                sqrt = Math.sqrt(x + y + z);
+                if (menor > sqrt) {
+                    menor = sqrt;
+                    nome = av.getNome();
+                    if(av.getSituacao().equals("VOANDO")) {
+                        nome = "PERMIT_POUSO:" + nome;
+                    } else if (av.getSituacao().equals("ABASTECIDO")) {
+                        nome = "PERMIT_DECOLAGEM:" + nome;
+                    }
+                }
+                System.out.println("O aviao mais proximo é = " + nome);
             }
-            System.out.println("O aviao mais proximo é = " + nome);
         }
         return nome;
     }
 
     public void requestControlador(ACLMessage msg) {
         System.out.println("Recebendo Request do CONTROLADOR DE VOO: " + msg.getContent());
-        ACLMessage acl = new ACLMessage(ACLMessage.INFORM);
-        acl.addReceiver(new AID("Joystick", AID.ISLOCALNAME));
-        acl.setContent( "PERMIT_POUSO: " + printDistancia());
+        ACLMessage acl = msg.createReply();
+        
+        acl.setContent(printDistancia());
         myAgent.send(acl);
         System.out.println("Retornar Informação para o CONTROLADOR DE VOO");
     }
@@ -46,7 +53,8 @@ public class FilaBehaviour extends CyclicBehaviour {
         if (msg != null) {
             switch (msg.getPerformative()) {
                 case ACLMessage.REQUEST:
-                    if (msg.getContent().startsWith("CONTROLADOR")) {
+                    if (msg.getContent().startsWith("POUSO")
+                            || msg.getContent().startsWith("DECOLAGEM")) {
                         requestControlador(msg);
                     }
                     break;

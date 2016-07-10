@@ -28,7 +28,7 @@ public class NoCrashTicker extends TickerBehaviour {
     NoCrashTicker(Agent agent, long delay) {
         super(agent, delay);
         alert.setConversationId("NoCrashAlert");
-        alert.addReceiver(new AID("Joystick"));
+        alert.addReceiver(new AID("Joystick", AID.ISLOCALNAME));
     }
 
     @Override
@@ -56,7 +56,8 @@ public class NoCrashTicker extends TickerBehaviour {
     }
 
     protected void collisionAlert(Aviao aviaoA, Aviao aviaoB) {
-        msgText = "RISCO de Colisão: " + aviaoA.getNome() + " e " + aviaoB.getNome();
+//        msgText = "RISCO de Colisão: " + aviaoA.getNome() + " e " + aviaoB.getNome();
+        msgText = "COLISAO";
         alert.setContent(msgText);
         alert.addUserDefinedParameter("AviaoA", aviaoA.getNome());
         alert.addUserDefinedParameter("AviaoB", aviaoB.getNome());

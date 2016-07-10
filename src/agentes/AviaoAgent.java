@@ -137,6 +137,10 @@ public class AviaoAgent extends Agent {
                                 aviao.setSituacao("FINGER:" + finger);
                                 RadarAgent.setStatus(aviao.getNome(), "FINGER:" + finger);
                                 myLogger.log(Logger.INFO, "Indo para o Finger: " + finger);
+                            } else if (msg.getContent().startsWith("DESCE")) {
+                                int descida = Integer.parseInt(msg.getUserDefinedParameter("Z"));
+                                aviao.setzLocalizacao(aviao.getzLocalizacao() + descida);
+                                RadarAgent.setLocal(aviao);
                             }
                             break;
                         case ACLMessage.INFORM:

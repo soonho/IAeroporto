@@ -64,7 +64,8 @@ public class ControladorAgent extends Agent {
                                 reply.setPerformative(ACLMessage.INFORM);
                                 reply.setContent("ADDED_RADAR");
                                 myAgent.send(reply);
-                            } else if (msg.getContent().startsWith("POUSO")) {
+                            } else if (msg.getContent().startsWith("POUSO")
+                                    || msg.getContent().startsWith("DECOLAGEM")) {
                                 //registra no log
                                 myLogger.log(Logger.INFO, "Agent " + getLocalName() + " - POUSO ["
                                         + ACLMessage.getPerformative(msg.getPerformative())
@@ -72,7 +73,7 @@ public class ControladorAgent extends Agent {
                                 //enviar mensagem para FilaAgent
                                 ACLMessage acl = new ACLMessage(ACLMessage.REQUEST);
                                 acl.addReceiver(new AID("Fila", AID.ISLOCALNAME));
-                                acl.setContent("POUSO" + msg.getContent());
+                                acl.setContent("NEXT_PLZ");
                                 myAgent.send(acl);
                             } else {
                                 myLogger.log(Logger.WARNING, "Agent " + getLocalName() + " - Mensagem inesperada ["
@@ -82,7 +83,9 @@ public class ControladorAgent extends Agent {
                             break;
                         case ACLMessage.INFORM:
                             if (msg.getContent().startsWith("POUSANDO")
-                                    || msg.getContent().startsWith("POUSEI")) {
+                                    || msg.getContent().startsWith("POUSEI")
+                                    || msg.getContent().startsWith("DECOLANDO")
+                                    || msg.getContent().startsWith("DECOLEI")) {
                                 //altera a situacao do aviao no radar
                                 StringTokenizer stok = new StringTokenizer(msg.getContent(), ":", false);
                                 String status = stok.nextToken();
@@ -107,10 +110,8 @@ public class ControladorAgent extends Agent {
                                 myLogger.log(Logger.WARNING, "Agent " + getLocalName() + " - COLISÃO ["
                                         + ACLMessage.getPerformative(msg.getPerformative()) + "] recebida de "
                                         + msg.getSender().getLocalName());
-                                StringTokenizer stok = new StringTokenizer(msg.getContent(), ":", false);
-                                String status = stok.nextToken();
-                                String aviao1 = stok.nextToken();
-                                String aviao2 = stok.nextToken();
+                                String aviao1 = msg.getUserDefinedParameter("AviaoA");
+                                String aviao2 = msg.getUserDefinedParameter("AviaoB");
                                 //info dos avioes
                                 Aviao um = RadarAgent.getAviao(aviao1);
                                 Aviao dois = RadarAgent.getAviao(aviao2);
@@ -121,7 +122,8 @@ public class ControladorAgent extends Agent {
                                 } else {
                                     acl.addReceiver(new AID(um.getNome(), AID.ISLOCALNAME));
                                 }
-                                acl.setContent("DESCER:2000");
+                                acl.setContent("DESCER");
+                                acl.addUserDefinedParameter("Z", "-2000");
                                 myAgent.send(acl);
                             } else if (msg.getContent().startsWith("PERMIT_POUSO")
                                     || msg.getContent().startsWith("PERMIT_DECOLAR")) {
