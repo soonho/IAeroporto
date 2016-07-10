@@ -26,11 +26,11 @@ public class RadarView extends javax.swing.JFrame {
     private void populate() {
         dm.clear();
 
-        dm.addElement(new ImgsNText("Finger 01", new ImageIcon("/home/mhayk/m2smart/IAeroporto/images/finger-free-resize.png")));
-        dm.addElement(new ImgsNText("Finger 02", new ImageIcon("/home/mhayk/m2smart/IAeroporto/images/finger-free-resize.png")));
-        dm.addElement(new ImgsNText("Finger 03", new ImageIcon("/home/mhayk/m2smart/IAeroporto/images/finger-free-resize.png")));
-        dm.addElement(new ImgsNText("Finger 04", new ImageIcon("/home/mhayk/m2smart/IAeroporto/images/finger-free-resize.png")));
-        dm.addElement(new ImgsNText("Finger 05", new ImageIcon("/home/mhayk/m2smart/IAeroporto/images/finger-free-resize.png")));
+        dm.addElement(new ImgsNText("Finger 01", new ImageIcon("./images/finger-free-resize.png")));
+        dm.addElement(new ImgsNText("Finger 02", new ImageIcon("./images/finger-free-resize.png")));
+        dm.addElement(new ImgsNText("Finger 03", new ImageIcon("./images/finger-free-resize.png")));
+        dm.addElement(new ImgsNText("Finger 04", new ImageIcon("./images/finger-free-resize.png")));
+        dm.addElement(new ImgsNText("Finger 05", new ImageIcon("./images/finger-free-resize.png")));
 
         jList1.setCellRenderer(new ListImgs.Renderer());
         jList1.setModel(dm);
