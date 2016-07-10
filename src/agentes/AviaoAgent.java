@@ -47,6 +47,7 @@ public class AviaoAgent extends Agent {
             double m = (aviao.getyLocalizacao() - aviao.getyDestino())
                     / (aviao.getxLocalizacao() - aviao.getyDestino());
             double alfa = Math.atan(m);
+            double distancia = Util.getDistancia2D(aviao.getLocalizacao(), aviao.getDestino());
             boolean chegando = aviao.getxDestino() == 0 && aviao.getyDestino() == 0 && aviao.getzDestino() == 0;
             int sinalX = (aviao.getxLocalizacao() > 0 && chegando ? -1 : 1);
             int sinalY = (aviao.getyLocalizacao() > 0 && chegando ? -1 : 1);
@@ -55,11 +56,34 @@ public class AviaoAgent extends Agent {
                 sinalX *= -1;
                 sinalY *= -1;
             } else if (aviao.getSituacao().equals("POUSANDO")) {
-                aviao.setzLocalizacao(aviao.getzLocalizacao() - Util.getDistancia2D(aviao.getLocalizacao(), aviao.getDestino()) / 6);
+                aviao.setzLocalizacao(aviao.getzLocalizacao() - distancia / (aviao.getzLocalizacao() / distancia));
+                if (distancia < 100 && aviao.getzLocalizacao() < 100) {
+                    aviao.setSituacao("POUSEI");
+                    RadarAgent.setStatus(aviao.getNome(), "POUSEI");
+                    //solicita pouso
+                    ACLMessage acl = new ACLMessage(ACLMessage.INFORM);
+                    acl.addReceiver(new AID("Joystick", AID.ISLOCALNAME));
+                    acl.setContent("POUSEI:" + aviao.getNome());
+                    myAgent.send(acl);
+                }
+            } else if (aviao.getSituacao().equals("DECOLANDO")) {
+                aviao.setzLocalizacao(aviao.getzLocalizacao() - distancia / (aviao.getzLocalizacao() / distancia));
+                if (distancia < 100 && aviao.getzLocalizacao() < 100) {
+                    aviao.setSituacao("POUSEI");
+                    RadarAgent.setStatus(aviao.getNome(), "POUSEI");
+                    //solicita pouso
+                    ACLMessage acl = new ACLMessage(ACLMessage.INFORM);
+                    acl.addReceiver(new AID("Joystick", AID.ISLOCALNAME));
+                    acl.setContent("POUSEI:" + aviao.getNome());
+                    myAgent.send(acl);
+                }
             }
-            //
-            if (aviao.getSituacao().equals("VOANDO")
-                    && Util.getDistancia2D(aviao.getLocalizacao(), aviao.getDestino()) < 5000) {
+            //se estiver chegando e quiser pousar
+            if (!aviao.getSituacao().equals("VOANDO") && !aviao.getSituacao().equals("POUSANDO") && !aviao.getSituacao().equals("DECOLANDO")) {
+                if (aviao.getSituacao().equals("")) {
+
+                }
+            } else if (aviao.getSituacao().equals("VOANDO") && distancia < 5000) {
                 //atualiza trajetória circular
                 aviao.setxLocalizacao(aviao.getxLocalizacao() * Math.cos(0.01)
                         - aviao.getyLocalizacao() * Math.sin(0.01));
@@ -111,6 +135,7 @@ public class AviaoAgent extends Agent {
                                 String info = stok.nextToken();
                                 String finger = stok.nextToken();
                                 aviao.setSituacao("FINGER:" + finger);
+                                RadarAgent.setStatus(aviao.getNome(), "FINGER:" + finger);
                                 myLogger.log(Logger.INFO, "Indo para o Finger: " + finger);
                             }
                             break;
