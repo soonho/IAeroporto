@@ -8,14 +8,33 @@ package view;
 import agentes.RadarAgent;
 import java.awt.Color;
 import java.awt.Graphics;
+import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
 import pojo.Aviao;
+import ListImgs.ImgsNText;
+import com.sun.javafx.webkit.theme.Renderer;
+import javax.swing.ImageIcon;
 
 /**
  *
  * @author soonho
  */
 public class RadarView extends javax.swing.JFrame {
+
+    DefaultListModel dm = new DefaultListModel();
+
+    private void populate() {
+        dm.clear();
+
+        dm.addElement(new ImgsNText("Finger 01", new ImageIcon("/home/mhayk/m2smart/IAeroporto/images/finger-free-resize.png")));
+        dm.addElement(new ImgsNText("Finger 02", new ImageIcon("/home/mhayk/m2smart/IAeroporto/images/finger-free-resize.png")));
+        dm.addElement(new ImgsNText("Finger 03", new ImageIcon("/home/mhayk/m2smart/IAeroporto/images/finger-free-resize.png")));
+        dm.addElement(new ImgsNText("Finger 04", new ImageIcon("/home/mhayk/m2smart/IAeroporto/images/finger-free-resize.png")));
+        dm.addElement(new ImgsNText("Finger 05", new ImageIcon("/home/mhayk/m2smart/IAeroporto/images/finger-free-resize.png")));
+
+        jList1.setCellRenderer(new ListImgs.Renderer());
+        jList1.setModel(dm);
+    }
 
     private class JPanelRadar extends JPanel {
 
@@ -45,6 +64,7 @@ public class RadarView extends javax.swing.JFrame {
         initComponents();
         setVisible(true);
         setLocationRelativeTo(null);
+        populate();
     }
 
     /**
@@ -57,27 +77,60 @@ public class RadarView extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new JPanelRadar();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jList1 = new javax.swing.JList<>();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(500, 500));
+        setMinimumSize(new java.awt.Dimension(500, 700));
         setUndecorated(true);
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(0, 0, 0));
         jPanel1.setForeground(new java.awt.Color(0, 204, 0));
-        jPanel1.setMaximumSize(new java.awt.Dimension(500, 500));
-        jPanel1.setMinimumSize(new java.awt.Dimension(500, 500));
-        jPanel1.setPreferredSize(new java.awt.Dimension(500, 500));
+        jPanel1.setMaximumSize(new java.awt.Dimension(500, 700));
+        jPanel1.setMinimumSize(new java.awt.Dimension(500, 700));
+        jPanel1.setPreferredSize(new java.awt.Dimension(500, 700));
+
+        jPanel3.setMaximumSize(new java.awt.Dimension(200, 200));
+        jPanel3.setMinimumSize(new java.awt.Dimension(200, 200));
+        jPanel3.setPreferredSize(new java.awt.Dimension(200, 200));
+
+        jScrollPane1.setViewportView(jList1);
+
+        jLabel1.setText("Lista de Fingers");
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGap(0, 250, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGap(0, 6, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 500, Short.MAX_VALUE)
+            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 500, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(0, 500, Short.MAX_VALUE)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -130,6 +183,10 @@ public class RadarView extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }
