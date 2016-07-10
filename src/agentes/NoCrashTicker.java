@@ -4,6 +4,7 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
+import java.util.ArrayList;
 import javafx.geometry.Point3D;
 import pojo.Aviao;
 
@@ -24,6 +25,7 @@ public class NoCrashTicker extends TickerBehaviour {
     Double coefA, coefB;
     Double distancia;
     String msgText;
+    ArrayList<String> alertas = new ArrayList();
 
     NoCrashTicker(Agent agent, long delay) {
         super(agent, delay);
@@ -36,10 +38,14 @@ public class NoCrashTicker extends TickerBehaviour {
         for (Aviao aviaoA : RadarAgent.radar) {
             for (Aviao aviaoB : RadarAgent.radar) {
                 if (!aviaoA.equals(aviaoB) && crossRouteTest(aviaoA, aviaoB)) {
-                    collisionAlert(aviaoA, aviaoB);
+                    if (!alertas.contains(aviaoB.getNome() + aviaoA.getNome())) {
+                        collisionAlert(aviaoA, aviaoB);
+                        alertas.add(aviaoA.getNome() + aviaoB.getNome());
+                    }
                 }
             }
         }
+        alertas.clear();
     }
 
     protected boolean crossRouteTest(Aviao aviaoA, Aviao aviaoB) {
@@ -62,8 +68,6 @@ public class NoCrashTicker extends TickerBehaviour {
         alert.addUserDefinedParameter("AviaoB", aviaoB.getNome());
 
         myAgent.send(alert);
-
-        System.out.println(msgText);
     }
 
     protected void setLocal(Aviao aviaoA, Aviao aviaoB) {
