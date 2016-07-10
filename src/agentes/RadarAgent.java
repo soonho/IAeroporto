@@ -36,10 +36,21 @@ public class RadarAgent extends Agent {
         @Override
         protected void onTick() {
             radarView.repaint();
-            synchronized (radar) {
-                for (Aviao av : radar) {
-                    System.out.println(av.getNome());
-                }
+//            synchronized (radar) {
+//                for (Aviao av : radar) {
+//                    System.out.println(av.getNome());
+//                }
+//            }
+        }
+    }
+
+    public static void setLocal(Aviao aviao) {
+        for (Aviao av : RadarAgent.radar) {
+            if (av.getNome().equals(aviao.getNome())) {
+                av.setxLocalizacao(aviao.getxLocalizacao());
+                av.setyLocalizacao(aviao.getyLocalizacao());
+                av.setzLocalizacao(aviao.getzLocalizacao());
+                break;
             }
         }
     }
@@ -87,7 +98,7 @@ public class RadarAgent extends Agent {
         dfd.addServices(sd);
         try {
             DFService.register(this, dfd);
-            RadarBehaviour comportamento = new RadarBehaviour(this, 1000);
+            RadarBehaviour comportamento = new RadarBehaviour(this, 250);
             addBehaviour(comportamento);
         } catch (FIPAException e) {
             myLogger.log(Logger.SEVERE, "Agent " + getLocalName() + " - Cannot register with DF", e);

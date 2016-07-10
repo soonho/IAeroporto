@@ -20,6 +20,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import javafx.geometry.Point3D;
 import pojo.Aviao;
+import util.Util;
 
 /**
  *
@@ -46,18 +47,38 @@ public class AviaoAgent extends Agent {
             double m = (aviao.getyLocalizacao() - aviao.getyDestino())
                     / (aviao.getxLocalizacao() - aviao.getyDestino());
             double alfa = Math.atan(m);
-            aviao.setxLocalizacao(aviao.getxLocalizacao()
-                    + (aviao.getxLocalizacao() > 0 ? -1 : 1) * Math.abs(Math.cos(alfa) * andou));
-            aviao.setyLocalizacao(aviao.getyLocalizacao()
-                    + (aviao.getyLocalizacao() > 0 ? -1 : 1) * Math.abs(Math.sin(alfa) * andou));
-            System.out.println(aviao.getxLocalizacao() + "," + aviao.getyLocalizacao());
-            for (Aviao av : RadarAgent.radar) {
-                if (av.getNome().equals(aviao.getNome())) {
-                    av.setxLocalizacao(aviao.getxLocalizacao());
-                    av.setyLocalizacao(aviao.getyLocalizacao());
-                    break;
-                }
+            boolean chegando = aviao.getxDestino() == 0 && aviao.getyDestino() == 0 && aviao.getzDestino() == 0;
+            int sinalX = (aviao.getxLocalizacao() > 0 && chegando ? -1 : 1);
+            int sinalY = (aviao.getyLocalizacao() > 0 && chegando ? -1 : 1);
+            //se o aviao está partindo
+            if (aviao.getSituacao().equals("BYE_BYE")) {
+                sinalX *= -1;
+                sinalY *= -1;
+            } else if (aviao.getSituacao().equals("POUSANDO")) {
+                aviao.setzLocalizacao(aviao.getzLocalizacao() - Util.getDistancia2D(aviao.getLocalizacao(), aviao.getDestino()) / 6);
             }
+            //
+            if (aviao.getSituacao().equals("VOANDO")
+                    && Util.getDistancia2D(aviao.getLocalizacao(), aviao.getDestino()) < 5000) {
+                //atualiza trajetória circular
+                aviao.setxLocalizacao(aviao.getxLocalizacao() * Math.cos(0.01)
+                        - aviao.getyLocalizacao() * Math.sin(0.01));
+                aviao.setyLocalizacao(aviao.getxLocalizacao() * Math.sin(0.01)
+                        + aviao.getyLocalizacao() * Math.cos(0.01));
+                //solicita pouso
+                ACLMessage acl = new ACLMessage(ACLMessage.REQUEST);
+                acl.addReceiver(new AID("Joystick", AID.ISLOCALNAME));
+                acl.setContent("POUSO:" + aviao.getNome());
+                myAgent.send(acl);
+            } else {
+                //atualiza trajetória retilinea
+                aviao.setxLocalizacao(aviao.getxLocalizacao()
+                        + sinalX * Math.abs(Math.cos(alfa) * andou));
+                aviao.setyLocalizacao(aviao.getyLocalizacao()
+                        + sinalY * Math.abs(Math.sin(alfa) * andou));
+            }
+//            System.out.println(aviao.getxLocalizacao() + "," + aviao.getyLocalizacao());
+            RadarAgent.setLocal(aviao);
         }
 
     }
@@ -96,6 +117,11 @@ public class AviaoAgent extends Agent {
                         case ACLMessage.INFORM:
                             if (msg.getContent().startsWith("ADDED_RADAR")) {
                                 isRegistered = true;
+                                myLogger.log(Logger.INFO, "Adicionado no Radar!");
+                            } else if (msg.getContent().startsWith("ABAST")) {
+                                aviao.setSituacao(msg.getContent());
+                                RadarAgent.setStatus(aviao.getNome(), msg.getContent());
+                                myLogger.log(Logger.INFO, aviao.getNome() + ": " + msg.getContent());
                             }
                             break;
                         case ACLMessage.FAILURE:
@@ -160,7 +186,7 @@ public class AviaoAgent extends Agent {
         dfd.addServices(sd);
         try {
             DFService.register(this, dfd);
-            RefreshBehaviour comportamento = new RefreshBehaviour(this, 1000);
+            RefreshBehaviour comportamento = new RefreshBehaviour(this, 250);
             AviaoBehaviour comportamento2 = new AviaoBehaviour(this);
             addBehaviour(comportamento);
             addBehaviour(comportamento2);

@@ -59,6 +59,22 @@ public class AbastecimentoAgent extends Agent {
                                 acl.addReceiver(new AID(aviao, AID.ISLOCALNAME));
                                 acl.setContent("ABASTECENDO");
                                 myAgent.send(acl);
+                                //espera 10 segundos
+                                Thread.sleep(10000);                                
+                                //mensagem para o goldfinger
+                                reply.setPerformative(ACLMessage.INFORM);
+                                reply.setContent("ABASTECIDO:" + aviao);
+                                myAgent.send(reply);
+                                //mensagem para o aviao
+                                acl = new ACLMessage(ACLMessage.INFORM);
+                                acl.addReceiver(new AID(aviao, AID.ISLOCALNAME));
+                                acl.setContent("ABASTECIDO");
+                                //registra no log
+                                myLogger.log(Logger.INFO, "Agent " + getLocalName()
+                                        + " - ABASTECIDO " + aviao + " ["
+                                        + ACLMessage.getPerformative(msg.getPerformative())
+                                        + "] recebida de " + msg.getSender().getLocalName()
+                                );
                             } else {
                                 myLogger.log(Logger.WARNING, "Agent " + getLocalName() + " - Mensagem inesperada ["
                                         + ACLMessage.getPerformative(msg.getPerformative()) + "] recebida de "

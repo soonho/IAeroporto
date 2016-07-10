@@ -28,10 +28,11 @@ public class RadarView extends javax.swing.JFrame {
             g.setColor(Color.GREEN);
             synchronized (RadarAgent.radar) {
                 for (Aviao av : RadarAgent.radar) {
-                    int converterX = (av.getxLocalizacao().intValue()+10000) / 40;
-                    int converterY = (av.getyLocalizacao().intValue()+10000) / 40;
-                    System.out.println(converterX + ":" + converterY);
-                    g.drawString("∆ "+av.getNome() + ":" + av.getzLocalizacao().intValue(), converterX, converterY);
+                    int converterX = (av.getxLocalizacao().intValue() + 10000) / 40;
+                    int converterY = (av.getyLocalizacao().intValue() + 10000) / 40;
+//                    System.out.println(converterX + ":" + converterY);
+                    g.drawString("∆ " + av.getNome(), converterX, converterY);
+                    g.drawString("     " + av.getzLocalizacao().intValue(), converterX, converterY + 10);
                 }
             }
         }
