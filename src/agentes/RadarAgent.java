@@ -77,6 +77,17 @@ public class RadarAgent extends Agent {
         }
     }
 
+    public static Aviao getAviao(String nome) {
+        synchronized (radar) {
+            for (Aviao av : radar) {
+                if (av.getNome().equals(nome)) {
+                    return av;
+                }
+            }
+            return null;
+        }
+    }
+
     @Override
     protected void takeDown() {
         try {

@@ -102,13 +102,35 @@ public class ControladorAgent extends Agent {
                                     acl.setContent("POUSO:" + aviao);
                                     myAgent.send(acl);
                                 }
-                            } else if (msg.getContent().startsWith("PERMIT_POUSO")) {
+                            } else if (msg.getContent().startsWith("COLISAO")) {
+                                //registra no log
+                                myLogger.log(Logger.WARNING, "Agent " + getLocalName() + " - COLISÃO ["
+                                        + ACLMessage.getPerformative(msg.getPerformative()) + "] recebida de "
+                                        + msg.getSender().getLocalName());
+                                StringTokenizer stok = new StringTokenizer(msg.getContent(), ":", false);
+                                String status = stok.nextToken();
+                                String aviao1 = stok.nextToken();
+                                String aviao2 = stok.nextToken();
+                                //info dos avioes
+                                Aviao um = RadarAgent.getAviao(aviao1);
+                                Aviao dois = RadarAgent.getAviao(aviao2);
+                                //request para o mais baixo descer mais
+                                ACLMessage acl = new ACLMessage(ACLMessage.REQUEST);
+                                if (um.getzLocalizacao() > dois.getzLocalizacao()) {
+                                    acl.addReceiver(new AID(dois.getNome(), AID.ISLOCALNAME));
+                                } else {
+                                    acl.addReceiver(new AID(um.getNome(), AID.ISLOCALNAME));
+                                }
+                                acl.setContent("DESCER:2000");
+                                myAgent.send(acl);
+                            } else if (msg.getContent().startsWith("PERMIT_POUSO")
+                                    || msg.getContent().startsWith("PERMIT_DECOLAR")) {
                                 StringTokenizer stok = new StringTokenizer(msg.getContent(), ":", false);
                                 String status = stok.nextToken();
                                 String aviao = stok.nextToken();
                                 ACLMessage acl = new ACLMessage(ACLMessage.REQUEST);
                                 acl.addReceiver(new AID(aviao, AID.ISLOCALNAME));
-                                acl.setContent("PERMIT_POUSO");
+                                acl.setContent(status);
                                 myAgent.send(acl);
                             } else {
                                 myLogger.log(Logger.WARNING, "Agent " + getLocalName() + " - Mensagem inesperada ["
@@ -122,10 +144,10 @@ public class ControladorAgent extends Agent {
                                     + ACLMessage.getPerformative(msg.getPerformative()) + "] recebida de "
                                     + msg.getSender().getLocalName());
                             //enviar mensagem para os bombeiros
-                            ACLMessage acl = new ACLMessage(ACLMessage.FAILURE);
-                            acl.addReceiver(new AID("Fireman", AID.ISLOCALNAME));
-                            acl.setContent("NO_POUSO:" + msg.getContent());
-                            myAgent.send(acl);
+//                            ACLMessage acl = new ACLMessage(ACLMessage.FAILURE);
+//                            acl.addReceiver(new AID("Fireman", AID.ISLOCALNAME));
+//                            acl.setContent("NO_POUSO:" + msg.getContent());
+//                            myAgent.send(acl);
                             break;
                         default:
                             myLogger.log(Logger.WARNING, "Agent " + getLocalName() + " - Mensagem inesperada ["
