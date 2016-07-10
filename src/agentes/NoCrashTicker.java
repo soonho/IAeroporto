@@ -56,7 +56,6 @@ public class NoCrashTicker extends TickerBehaviour {
     }
 
     protected void collisionAlert(Aviao aviaoA, Aviao aviaoB) {
-//        msgText = "RISCO de Colisão: " + aviaoA.getNome() + " e " + aviaoB.getNome();
         msgText = "COLISAO";
         alert.setContent(msgText);
         alert.addUserDefinedParameter("AviaoA", aviaoA.getNome());

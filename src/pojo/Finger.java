@@ -26,19 +26,19 @@ public class Finger implements Serializable {
         this.status = status;
     }
 
-    public void setFingerNumber(int number) {
+    public void setNumber(int number) {
         this.number = number;
     }
 
-    public int getFingerNumber() {
+    public int getNumber() {
         return this.number;
     }
 
-    public void setFingerStatus(Boolean status) {
+    public void setStatus(Boolean status) {
         this.status = status;
     }
 
-    public boolean getFingerStatus() {
+    public boolean getStatus() {
         return this.status;
     }
 
