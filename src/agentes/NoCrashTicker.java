@@ -20,6 +20,7 @@ public class NoCrashTicker extends TickerBehaviour {
     Double bDestX, bDestY;
 
     Double coefA, coefB;
+    Double distancia;
 
     NoCrashTicker(Agent agent, long delay) {
         super(agent, delay);
@@ -31,7 +32,7 @@ public class NoCrashTicker extends TickerBehaviour {
     protected void onTick() {
         for (Aviao aviaoA : RadarAgent.radar) {
             for (Aviao aviaoB : RadarAgent.radar) {
-                if (crossRouteTest(aviaoA, aviaoB)) {
+                if (!aviaoA.equals(aviaoB) && crossRouteTest(aviaoA, aviaoB)) {
                     collisionAlert(aviaoA, aviaoB);
                 }
             }
@@ -39,24 +40,26 @@ public class NoCrashTicker extends TickerBehaviour {
     }
 
     protected boolean crossRouteTest(Aviao aviaoA, Aviao aviaoB) {
+        setLocal(aviaoA, aviaoB);
         coefA = (aLocalY - aDestY) / (aLocalX - aDestX);
         coefB = (bLocalY - bDestY) / (bLocalX - bDestX);
 
-        Double distancia = Math.sqrt(Math.pow((aLocalX - bLocalX), 2) + Math.pow((aLocalY - bLocalY), 2));
-        if(distancia <= 1000){
-            return (!coefA.equals(coefB) && !aDestX.equals(bDestX) && !aDestY.equals(bDestY));
+        distancia = Math.sqrt(Math.pow((aLocalX - bLocalX), 2) + Math.pow((aLocalY - bLocalY), 2));
+        if (distancia <= 1000) {
+            return !coefA.equals(coefB) && !aDestX.equals(bDestX) && !aDestY.equals(bDestY);
         }
         return false;
     }
 
     protected void collisionAlert(Aviao aviaoA, Aviao aviaoB) {
-        alert.setContent("Alerta: " + aviaoA.getNome() + " e " + aviaoB.getNome() + " estão em rota de colisão!!!");
+        String msgText = "Alerta: " + aviaoA.getNome() + " e " + aviaoB.getNome() + " estão em rota de colisão!!!";
+        alert.setContent(msgText);
         alert.addUserDefinedParameter("AviaoA", aviaoA.getNome());
         alert.addUserDefinedParameter("AviaoB", aviaoB.getNome());
 
         myAgent.send(alert);
 
-        System.out.println("Alerta: " + aviaoA.getNome() + " e " + aviaoB.getNome() + " estão em rota de colisão!!!");
+        System.out.println(msgText);
     }
 
     protected void setLocal(Aviao aviaoA, Aviao aviaoB) {
