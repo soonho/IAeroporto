@@ -15,7 +15,7 @@ public class FilaBehaviourRefresh extends TickerBehaviour {
 
     @Override
     protected void onTick() {
-        System.out.println("Solicitando informações do RADAR");
+//        System.out.println("Solicitando informações do RADAR");
         acl.addReceiver(new AID("Radar", AID.ISLOCALNAME));
         acl.setContent("RADAR: Solicitando informações do Radar");
         myAgent.send(acl);

@@ -57,7 +57,7 @@ public class AviaoAgent extends Agent {
                 sinalY *= -1;
             } else if (aviao.getSituacao().equals("POUSANDO")) {
                 aviao.setzLocalizacao(aviao.getzLocalizacao() - distancia / (aviao.getzLocalizacao() / distancia));
-                if (distancia < 100 && aviao.getzLocalizacao() < 100) {
+                if (distancia < andou) {
                     aviao.setSituacao("POUSEI");
                     RadarAgent.setStatus(aviao.getNome(), "POUSEI");
                     //solicita pouso
@@ -68,7 +68,7 @@ public class AviaoAgent extends Agent {
                 }
             } else if (aviao.getSituacao().equals("DECOLANDO")) {
                 aviao.setzLocalizacao(aviao.getzLocalizacao() - distancia / (aviao.getzLocalizacao() / distancia));
-                if (distancia < 100 && aviao.getzLocalizacao() < 100) {
+                if (distancia < andou) {
                     aviao.setSituacao("POUSEI");
                     RadarAgent.setStatus(aviao.getNome(), "POUSEI");
                     //solicita pouso
@@ -151,6 +151,17 @@ public class AviaoAgent extends Agent {
                                 aviao.setSituacao(msg.getContent());
                                 RadarAgent.setStatus(aviao.getNome(), msg.getContent());
                                 myLogger.log(Logger.INFO, aviao.getNome() + ": " + msg.getContent());
+                            }
+                            break;
+                        case ACLMessage.AGREE:
+                            if (msg.getContent().equals("PERMIT_POUSO")) {
+                                aviao.setSituacao("POUSANDO");
+                                RadarAgent.setStatus(aviao.getNome(), "POUSANDO");
+                                myLogger.log(Logger.INFO, aviao.getNome() + ": POUSANDO");
+                            } else if (msg.getContent().equals("PERMIT_DECOLAGEM")) {
+                                aviao.setSituacao("DECOLANDO");
+                                RadarAgent.setStatus(aviao.getNome(), "DECOLEI");
+                                myLogger.log(Logger.INFO, aviao.getNome() + ": DECOLANDO");
                             }
                             break;
                         case ACLMessage.FAILURE:

@@ -130,7 +130,7 @@ public class ControladorAgent extends Agent {
                                 StringTokenizer stok = new StringTokenizer(msg.getContent(), ":", false);
                                 String status = stok.nextToken();
                                 String aviao = stok.nextToken();
-                                ACLMessage acl = new ACLMessage(ACLMessage.REQUEST);
+                                ACLMessage acl = new ACLMessage(ACLMessage.AGREE);
                                 acl.addReceiver(new AID(aviao, AID.ISLOCALNAME));
                                 acl.setContent(status);
                                 myAgent.send(acl);

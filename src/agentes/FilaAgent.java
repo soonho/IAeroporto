@@ -8,7 +8,7 @@ public class FilaAgent extends Agent {
     protected void setup() {
         FilaBehaviour behaviour = new FilaBehaviour(this);
         addBehaviour(behaviour);
-        FilaBehaviourRefresh behaviourRefresh = new FilaBehaviourRefresh(this, 5000);
+        FilaBehaviourRefresh behaviourRefresh = new FilaBehaviourRefresh(this, 500);
         addBehaviour(behaviourRefresh);
     }
 
