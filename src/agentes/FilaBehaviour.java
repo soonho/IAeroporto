@@ -16,6 +16,10 @@ public class FilaBehaviour extends CyclicBehaviour {
         String nome = null;
         synchronized (RadarAgent.radar) {
             for (Aviao av : RadarAgent.radar) {
+                if (av.getSituacao().equals("POUSANDO")
+                        || av.getSituacao().equals("DECOLANDO")) {
+                    return null;
+                }
                 if (av.getSituacao().equals("VOANDO")
                         || av.getSituacao().equals("ABASTECIDO")) {
 //                    System.out.println("Distancia: " + av.getLocalizacao());
@@ -29,7 +33,7 @@ public class FilaBehaviour extends CyclicBehaviour {
                         if (av.getSituacao().equals("VOANDO")) {
                             nome = "PERMIT_POUSO:" + nome;
                         } else if (av.getSituacao().equals("ABASTECIDO")) {
-                            nome = "PERMIT_DECOLAGEM:" + nome;
+                            nome = "PERMIT_DECOLAR:" + nome;
                         }
                     }
                 }
@@ -40,10 +44,14 @@ public class FilaBehaviour extends CyclicBehaviour {
     }
 
     public void requestControlador(ACLMessage msg) {
-        System.out.println("Recebendo Request do CONTROLADOR DE VOO: " + msg.getContent());
+//        System.out.println("Recebendo Request do CONTROLADOR DE VOO: " + msg.getContent());
+        String content = printDistancia();
+        if (content == null) {
+            return;
+        }
         ACLMessage acl = msg.createReply();
         acl.setPerformative(ACLMessage.INFORM);
-        acl.setContent(printDistancia());
+        acl.setContent(content);
         myAgent.send(acl);
 //        System.out.println("Retornar Informação para o CONTROLADOR DE VOO");
     }

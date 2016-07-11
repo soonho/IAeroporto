@@ -23,7 +23,7 @@ public class GoldFingerAgent extends Agent {
     @Override
     protected void setup() {
         try {
-            System.out.println("Hello my name is " + getLocalName());
+//            System.out.println("Hello my name is " + getLocalName());
 
             // Registration with the DF
             DFAgentDescription dfd = new DFAgentDescription();
@@ -95,6 +95,7 @@ class GoldeFingerBehaviour extends TickerBehaviour {
                     case ACLMessage.INFORM:
                         if (received.getContent().startsWith("POUSO")) {
                             StringTokenizer stok = new StringTokenizer(received.getContent(), ":", false);
+                            String status = stok.nextToken();
                             String aviao = stok.nextToken();
                             myLogger.log(Logger.WARNING, "Agent " + myAgent.getLocalName() + " - POUSO COM SUCESSO! ["
                                     + ACLMessage.getPerformative(received.getPerformative())
@@ -106,8 +107,13 @@ class GoldeFingerBehaviour extends TickerBehaviour {
                             reply.addReceiver(new AID(aviao, AID.ISLOCALNAME));
                             reply.setContent("GO_TO_FINGER:" + this.getFreeFinger().getNumber());
                             myAgent.send(reply);
+
+                            reply = new ACLMessage(ACLMessage.REQUEST);
+                            reply.addReceiver(new AID("Abastecimento", AID.ISLOCALNAME));
+                            reply.setContent("ABASTECER");
+                            reply.addUserDefinedParameter("AVIAO", aviao);
+                            myAgent.send(reply);
                         }
-                        System.out.println("é meu parceiro...");
                         break;
                     default:
                         myLogger.log(Logger.WARNING, "Agent " + myAgent.getLocalName() + " - Mensagem inesperada ["

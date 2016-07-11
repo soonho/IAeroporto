@@ -41,9 +41,7 @@ public class AbastecimentoAgent extends Agent {
                         case ACLMessage.REQUEST:
                             if (msg.getContent().startsWith("ABASTECER")) {
                                 //recebe o request e diz que está indo abastecer
-                                StringTokenizer stok = new StringTokenizer(msg.getContent(), ":", false);
-                                String status = stok.nextToken();
-                                String aviao = stok.nextToken();
+                                String aviao = msg.getUserDefinedParameter("AVIAO");
                                 //registra no log
                                 myLogger.log(Logger.INFO, "Agent " + getLocalName()
                                         + " - ABASTECENDO " + aviao + " ["
@@ -69,6 +67,7 @@ public class AbastecimentoAgent extends Agent {
                                 acl = new ACLMessage(ACLMessage.INFORM);
                                 acl.addReceiver(new AID(aviao, AID.ISLOCALNAME));
                                 acl.setContent("ABASTECIDO");
+                                myAgent.send(acl);
                                 //registra no log
                                 myLogger.log(Logger.INFO, "Agent " + getLocalName()
                                         + " - ABASTECIDO " + aviao + " ["

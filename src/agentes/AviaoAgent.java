@@ -56,8 +56,9 @@ public class AviaoAgent extends Agent {
                 sinalX *= -1;
                 sinalY *= -1;
             } else if (aviao.getSituacao().equals("POUSANDO")) {
-                aviao.setzLocalizacao(aviao.getzLocalizacao() - distancia / (aviao.getzLocalizacao() / distancia));
+                aviao.setzLocalizacao(distancia * 6);
                 if (distancia < andou) {
+                    aviao.setzLocalizacao(0.0);
                     aviao.setSituacao("POUSEI");
                     RadarAgent.setStatus(aviao.getNome(), "POUSEI");
                     //solicita pouso
@@ -67,21 +68,31 @@ public class AviaoAgent extends Agent {
                     myAgent.send(acl);
                 }
             } else if (aviao.getSituacao().equals("DECOLANDO")) {
-                aviao.setzLocalizacao(aviao.getzLocalizacao() - distancia / (aviao.getzLocalizacao() / distancia));
-                if (distancia < andou) {
-                    aviao.setSituacao("POUSEI");
-                    RadarAgent.setStatus(aviao.getNome(), "POUSEI");
+                sinalX *= -1;
+                sinalY *= -1;
+                double distanciaAeroporto = Util.getDistancia2D(aviao.getLocalizacao(), new Point3D(0, 0, 0));
+                if (distanciaAeroporto < 5000) {
+                    aviao.setzLocalizacao(distanciaAeroporto * 6);
+                } else {
+                    aviao.setSituacao("BYE_BYE");
+                    RadarAgent.setStatus(aviao.getNome(), "BYE_BYE");
                     //solicita pouso
                     ACLMessage acl = new ACLMessage(ACLMessage.INFORM);
                     acl.addReceiver(new AID("Joystick", AID.ISLOCALNAME));
-                    acl.setContent("POUSEI:" + aviao.getNome());
+                    acl.setContent("DECOLEI:" + aviao.getNome());
                     myAgent.send(acl);
                 }
             }
             //se estiver chegando e quiser pousar
-            if (!aviao.getSituacao().equals("VOANDO") && !aviao.getSituacao().equals("POUSANDO") && !aviao.getSituacao().equals("DECOLANDO")) {
-                if (aviao.getSituacao().equals("")) {
-
+            if (aviao.getSituacao().equals("ABASTECIDO")) {
+                ACLMessage acl = new ACLMessage(ACLMessage.REQUEST);
+                acl.addReceiver(new AID("Joystick", AID.ISLOCALNAME));
+                acl.setContent("DECOLAGEM");
+                myAgent.send(acl);
+                if (aviao.getxDestino() == 0 && aviao.getyDestino() == 0) {
+                    aviao.setxDestino((Math.random() > 0.5 ? -1 : 1) * (Math.random() * 10000 + 10000));
+                    aviao.setyDestino((Math.random() > 0.5 ? -1 : 1) * (Math.random() * 10000 + 10000));
+                    System.out.println(aviao.getxDestino() + ":" + aviao.getyDestino());
                 }
             } else if (aviao.getSituacao().equals("VOANDO") && distancia < 5000) {
                 //atualiza trajetória circular
@@ -94,7 +105,11 @@ public class AviaoAgent extends Agent {
                 acl.addReceiver(new AID("Joystick", AID.ISLOCALNAME));
                 acl.setContent("POUSO:" + aviao.getNome());
                 myAgent.send(acl);
-            } else {
+            } else if (aviao.getSituacao().equals("VOANDO") 
+                    || aviao.getSituacao().equals("POUSANDO") 
+                    || aviao.getSituacao().equals("BYE_BYE") 
+                    || aviao.getSituacao().equals("DECOLEI") 
+                    || aviao.getSituacao().equals("DECOLANDO")) {
                 //atualiza trajetória retilinea
                 aviao.setxLocalizacao(aviao.getxLocalizacao()
                         + sinalX * Math.abs(Math.cos(alfa) * andou));
@@ -158,7 +173,7 @@ public class AviaoAgent extends Agent {
                                 aviao.setSituacao("POUSANDO");
                                 RadarAgent.setStatus(aviao.getNome(), "POUSANDO");
                                 myLogger.log(Logger.INFO, aviao.getNome() + ": POUSANDO");
-                            } else if (msg.getContent().equals("PERMIT_DECOLAGEM")) {
+                            } else if (msg.getContent().equals("PERMIT_DECOLAR")) {
                                 aviao.setSituacao("DECOLANDO");
                                 RadarAgent.setStatus(aviao.getNome(), "DECOLEI");
                                 myLogger.log(Logger.INFO, aviao.getNome() + ": DECOLANDO");

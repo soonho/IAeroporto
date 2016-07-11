@@ -50,7 +50,7 @@ public class RadarView extends javax.swing.JFrame {
                     int converterX = (av.getxLocalizacao().intValue() + 10000) / 40;
                     int converterY = (av.getyLocalizacao().intValue() + 10000) / 40;
 //                    System.out.println(converterX + ":" + converterY);
-                    g.drawString("∆ " + av.getNome(), converterX, converterY);
+                    g.drawString("∆ " + av.getNome() + "(" + av.getSituacao() + ")", converterX, converterY);
                     g.drawString("     " + av.getzLocalizacao().intValue(), converterX, converterY + 10);
                 }
             }
