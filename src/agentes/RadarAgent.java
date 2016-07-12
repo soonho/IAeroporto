@@ -77,6 +77,17 @@ public class RadarAgent extends Agent {
         }
     }
 
+    public static void delete(Aviao aviao) {
+        synchronized (radar) {
+            for (Aviao av : radar) {
+                if (av.getNome().equals(aviao)) {
+                    radar.remove(av);
+                    return;
+                }
+            }
+        }
+    }
+
     public static Aviao getAviao(String nome) {
         synchronized (radar) {
             for (Aviao av : radar) {

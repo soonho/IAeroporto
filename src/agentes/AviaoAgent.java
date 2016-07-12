@@ -48,6 +48,7 @@ public class AviaoAgent extends Agent {
                     / (aviao.getxLocalizacao() - aviao.getyDestino());
             double alfa = Math.atan(m);
             double distancia = Util.getDistancia2D(aviao.getLocalizacao(), aviao.getDestino());
+            double distanciaAeroporto = Util.getDistancia2D(aviao.getLocalizacao(), new Point3D(0, 0, 0));
             boolean chegando = aviao.getxDestino() == 0 && aviao.getyDestino() == 0 && aviao.getzDestino() == 0;
             int sinalX = (aviao.getxLocalizacao() > 0 && chegando ? -1 : 1);
             int sinalY = (aviao.getyLocalizacao() > 0 && chegando ? -1 : 1);
@@ -70,7 +71,6 @@ public class AviaoAgent extends Agent {
             } else if (aviao.getSituacao().equals("DECOLANDO")) {
                 sinalX *= -1;
                 sinalY *= -1;
-                double distanciaAeroporto = Util.getDistancia2D(aviao.getLocalizacao(), new Point3D(0, 0, 0));
                 if (distanciaAeroporto < 5000) {
                     aviao.setzLocalizacao(distanciaAeroporto * 6);
                 } else {
@@ -105,16 +105,20 @@ public class AviaoAgent extends Agent {
                 acl.addReceiver(new AID("Joystick", AID.ISLOCALNAME));
                 acl.setContent("POUSO:" + aviao.getNome());
                 myAgent.send(acl);
-            } else if (aviao.getSituacao().equals("VOANDO") 
-                    || aviao.getSituacao().equals("POUSANDO") 
-                    || aviao.getSituacao().equals("BYE_BYE") 
-                    || aviao.getSituacao().equals("DECOLEI") 
+            } else if (aviao.getSituacao().equals("VOANDO")
+                    || aviao.getSituacao().equals("POUSANDO")
+                    || aviao.getSituacao().equals("BYE_BYE")
+                    || aviao.getSituacao().equals("DECOLEI")
                     || aviao.getSituacao().equals("DECOLANDO")) {
                 //atualiza trajetória retilinea
                 aviao.setxLocalizacao(aviao.getxLocalizacao()
                         + sinalX * Math.abs(Math.cos(alfa) * andou));
                 aviao.setyLocalizacao(aviao.getyLocalizacao()
                         + sinalY * Math.abs(Math.sin(alfa) * andou));
+                if ((aviao.getSituacao().equals("BYE_BYE")
+                        || aviao.getSituacao().equals("DECOLEI")) && distanciaAeroporto > 20000) {
+                    myAgent.doDelete();
+                }
             }
 //            System.out.println(aviao.getxLocalizacao() + "," + aviao.getyLocalizacao());
             RadarAgent.setLocal(aviao);
@@ -175,7 +179,7 @@ public class AviaoAgent extends Agent {
                                 myLogger.log(Logger.INFO, aviao.getNome() + ": POUSANDO");
                             } else if (msg.getContent().equals("PERMIT_DECOLAR")) {
                                 aviao.setSituacao("DECOLANDO");
-                                RadarAgent.setStatus(aviao.getNome(), "DECOLEI");
+                                RadarAgent.setStatus(aviao.getNome(), "DECOLANDO");
                                 myLogger.log(Logger.INFO, aviao.getNome() + ": DECOLANDO");
                             }
                             break;
@@ -218,6 +222,7 @@ public class AviaoAgent extends Agent {
             DFService.deregister(this);
         } catch (Exception e) {
         }
+        RadarAgent.delete(aviao);
     }
 
     @Override
