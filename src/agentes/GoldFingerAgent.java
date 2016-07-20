@@ -20,6 +20,8 @@ public class GoldFingerAgent extends Agent {
 
     Logger myLogger = Logger.getMyLogger(getClass().getName());
 
+    public static ArrayList<Finger> listaFingers = new ArrayList();
+
     @Override
     protected void setup() {
         try {
@@ -47,27 +49,28 @@ public class GoldFingerAgent extends Agent {
 class GoldeFingerBehaviour extends TickerBehaviour {
 
     Logger myLogger = Logger.getMyLogger(getClass().getName());
-    ArrayList<Finger> listaFingers = new ArrayList();
     ACLMessage received, reply;
     int total;
 
     public GoldeFingerBehaviour(Agent a, long delay) {
         super(a, delay);
-        listaFingers.add(new Finger(1));
-        listaFingers.add(new Finger(2));
-        listaFingers.add(new Finger(3));
+        GoldFingerAgent.listaFingers.add(new Finger(1));
+        GoldFingerAgent.listaFingers.add(new Finger(2));
+        GoldFingerAgent.listaFingers.add(new Finger(3));
     }
 
     public Finger getFreeFinger() {
-        for (Finger finger : listaFingers) {
-            return finger.getStatus() == false ? finger : null;
+        for (Finger finger : GoldFingerAgent.listaFingers) {
+            if (finger.getStatus() == false) {
+                return finger;
+            }
         }
         return null;
     }
 
     public int getTotalFreeFingers() {
         total = 0;
-        for (Finger finger : listaFingers) {
+        for (Finger finger : GoldFingerAgent.listaFingers) {
             if (finger.getStatus() == false) {
                 total++;
             }
@@ -77,12 +80,32 @@ class GoldeFingerBehaviour extends TickerBehaviour {
 
     public int getTotalBusyFingers() {
         total = 0;
-        for (Finger finger : listaFingers) {
+        for (Finger finger : GoldFingerAgent.listaFingers) {
             if (finger.getStatus() == true) {
                 total++;
             }
         }
         return total;
+    }
+
+    public void addFinger(int num, String aviao) {
+        for (Finger finger : GoldFingerAgent.listaFingers) {
+            if (finger.getNumber() == num) {
+                finger.setStatus(Boolean.TRUE);
+                finger.setAviao(aviao);
+                break;
+            }
+        }
+    }
+
+    public void removeFinger(String aviao) {
+        for (Finger finger : GoldFingerAgent.listaFingers) {
+            if (finger.getAviao().equals(aviao)) {
+                finger.setStatus(Boolean.FALSE);
+                finger.setAviao("");
+                break;
+            }
+        }
     }
 
     @Override
@@ -101,11 +124,12 @@ class GoldeFingerBehaviour extends TickerBehaviour {
                                     + ACLMessage.getPerformative(received.getPerformative())
                                     + "] recebida de " + received.getSender().getLocalName());
 
-                            myLogger.log(Logger.INFO, "Total de fingers: " + listaFingers.size());
+                            myLogger.log(Logger.INFO, "Total de fingers: " + GoldFingerAgent.listaFingers.size());
                             myLogger.log(Logger.INFO, "Finger Disponivel: " + this.getFreeFinger().getNumber());
 
                             reply.addReceiver(new AID(aviao, AID.ISLOCALNAME));
                             reply.setContent("GO_TO_FINGER:" + this.getFreeFinger().getNumber());
+                            addFinger(this.getFreeFinger().getNumber(), aviao);
                             myAgent.send(reply);
 
                             reply = new ACLMessage(ACLMessage.REQUEST);
@@ -113,6 +137,11 @@ class GoldeFingerBehaviour extends TickerBehaviour {
                             reply.setContent("ABASTECER");
                             reply.addUserDefinedParameter("AVIAO", aviao);
                             myAgent.send(reply);
+                        } else if (received.getContent().startsWith("ABASTECIDO")) {
+                            StringTokenizer stok = new StringTokenizer(received.getContent(), ":", false);
+                            String info = stok.nextToken();
+                            String aviao = stok.nextToken();
+                            removeFinger(aviao);
                         }
                         break;
                     default:

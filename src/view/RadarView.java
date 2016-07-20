@@ -12,8 +12,9 @@ import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
 import pojo.Aviao;
 import ListImgs.ImgsNText;
-import com.sun.javafx.webkit.theme.Renderer;
+import agentes.GoldFingerAgent;
 import javax.swing.ImageIcon;
+import pojo.Finger;
 
 /**
  *
@@ -25,13 +26,13 @@ public class RadarView extends javax.swing.JFrame {
 
     private void populate() {
         dm.clear();
-
-        dm.addElement(new ImgsNText("Finger 01", new ImageIcon("./images/finger-free-resize.png")));
-        dm.addElement(new ImgsNText("Finger 02", new ImageIcon("./images/finger-free-resize.png")));
-        dm.addElement(new ImgsNText("Finger 03", new ImageIcon("./images/finger-free-resize.png")));
-        dm.addElement(new ImgsNText("Finger 04", new ImageIcon("./images/finger-free-resize.png")));
-        dm.addElement(new ImgsNText("Finger 05", new ImageIcon("./images/finger-free-resize.png")));
-
+        for (Finger finger : GoldFingerAgent.listaFingers) {
+            if (!finger.getStatus()) {
+                dm.addElement(new ImgsNText("Finger 0" + finger.getNumber(), new ImageIcon("./images/finger-free-resize.png")));
+            } else {
+                dm.addElement(new ImgsNText("Finger 0" + finger.getNumber(), new ImageIcon("./images/finger-ocupied-resize.png")));
+            }
+        }
         jList1.setCellRenderer(new ListImgs.Renderer());
         jList1.setModel(dm);
     }
@@ -52,6 +53,7 @@ public class RadarView extends javax.swing.JFrame {
 //                    System.out.println(converterX + ":" + converterY);
                     g.drawString("∆ " + av.getNome() + "(" + av.getSituacao() + ")", converterX, converterY);
                     g.drawString("     " + av.getzLocalizacao().intValue(), converterX, converterY + 10);
+                    populate();
                 }
             }
         }

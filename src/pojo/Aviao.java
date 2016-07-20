@@ -27,6 +27,15 @@ public class Aviao implements Serializable {
     private Integer tamanho;
     private String situacao;
     private Double velocidade;
+    private String fingerNumber;
+
+    public String getFingerNumber() {
+        return fingerNumber;
+    }
+
+    public void setFingerNumber(String fingerNumber) {
+        this.fingerNumber = fingerNumber;
+    }
 
     public Aviao(String nome, Point3D localizacao, Point3D destino, Integer tamanho, String situacao, Double velocidade) {
         this.nome = nome;

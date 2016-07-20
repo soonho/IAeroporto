@@ -15,6 +15,7 @@ public class Finger implements Serializable {
 
     private int number;
     private boolean status = false;
+    private String aviao;
 
     public Finger(int number) {
         this.number = number;
@@ -40,6 +41,14 @@ public class Finger implements Serializable {
 
     public boolean getStatus() {
         return this.status;
+    }
+
+    public String getAviao() {
+        return aviao;
+    }
+
+    public void setAviao(String aviao) {
+        this.aviao = aviao;
     }
 
 }

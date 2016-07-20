@@ -154,6 +154,7 @@ public class AviaoAgent extends Agent {
                                 String info = stok.nextToken();
                                 String finger = stok.nextToken();
                                 aviao.setSituacao("FINGER:" + finger);
+                                aviao.setFingerNumber(finger);
                                 RadarAgent.setStatus(aviao.getNome(), "FINGER:" + finger);
                                 myLogger.log(Logger.INFO, "Indo para o Finger: " + finger);
                             } else if (msg.getContent().startsWith("DESCE")) {
