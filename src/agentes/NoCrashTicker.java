@@ -38,10 +38,7 @@ public class NoCrashTicker extends TickerBehaviour {
         for (Aviao aviaoA : RadarAgent.radar) {
             for (Aviao aviaoB : RadarAgent.radar) {
                 if (!aviaoA.equals(aviaoB) && crossRouteTest(aviaoA, aviaoB)) {
-                    if (!alertas.contains(aviaoB.getNome() + aviaoA.getNome())) {
-                        collisionAlert(aviaoA, aviaoB);
-                        alertas.add(aviaoA.getNome() + aviaoB.getNome());
-                    }
+                    collisionAlert(aviaoA, aviaoB);
                 }
             }
         }
@@ -62,12 +59,15 @@ public class NoCrashTicker extends TickerBehaviour {
     }
 
     protected void collisionAlert(Aviao aviaoA, Aviao aviaoB) {
-        msgText = "COLISAO";
-        alert.setContent(msgText);
-        alert.addUserDefinedParameter("AviaoA", aviaoA.getNome());
-        alert.addUserDefinedParameter("AviaoB", aviaoB.getNome());
+        if (!alertas.contains(aviaoB.getNome() + aviaoA.getNome())) {
+            msgText = "COLISAO";
+            alert.setContent(msgText);
+            alert.addUserDefinedParameter("AviaoA", aviaoA.getNome());
+            alert.addUserDefinedParameter("AviaoB", aviaoB.getNome());
 
-        myAgent.send(alert);
+            myAgent.send(alert);
+            alertas.add(aviaoA.getNome() + aviaoB.getNome());
+        }
     }
 
     protected void setLocal(Aviao aviaoA, Aviao aviaoB) {
