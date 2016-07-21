@@ -53,7 +53,7 @@ public class NoCrashTicker extends TickerBehaviour {
         coefA = (pointA.getY() - destA.getY()) / (pointA.getX() - destA.getX());
         coefB = (pointB.getY() - destB.getY()) / (pointB.getX() - destB.getX());
 
-        distancia = pointA.distance(pointB.getX(), pointB.getY(), pointB.getZ());
+        distancia = pointA.distance(pointB);
 
         if (!coefA.equals(coefB)) {
             return distancia <= 4000;
